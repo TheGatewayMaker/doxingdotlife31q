@@ -67,10 +67,9 @@ export const handleUpload: RequestHandler = async (req, res) => {
       });
     } catch (r2Error) {
       console.error("R2 upload error:", r2Error);
-      const errorMessage = r2Error instanceof Error ? r2Error.message : String(r2Error);
-      res
-        .status(500)
-        .json({ error: `Upload to R2 failed: ${errorMessage}` });
+      const errorMessage =
+        r2Error instanceof Error ? r2Error.message : String(r2Error);
+      res.status(500).json({ error: `Upload to R2 failed: ${errorMessage}` });
     }
   } catch (error) {
     console.error("Upload error:", error);

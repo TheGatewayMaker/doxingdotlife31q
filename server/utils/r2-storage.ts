@@ -31,7 +31,10 @@ const getR2Client = (): S3Client => {
     if (!endpoint) missing.push("R2_ENDPOINT");
 
     console.error("Missing R2 env variables:", missing);
-    console.error("Available env keys:", Object.keys(process.env).filter(k => k.startsWith("R2_")));
+    console.error(
+      "Available env keys:",
+      Object.keys(process.env).filter((k) => k.startsWith("R2_")),
+    );
 
     throw new Error(
       `Missing required R2 environment variables: ${missing.join(", ")}`,

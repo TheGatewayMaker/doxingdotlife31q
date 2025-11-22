@@ -32,15 +32,15 @@ export function createServer() {
 
   // Debug endpoint to check environment variables
   app.get("/api/debug/env", (_req, res) => {
-    const r2Keys = Object.keys(process.env).filter(k => k.startsWith("R2_"));
+    const r2Keys = Object.keys(process.env).filter((k) => k.startsWith("R2_"));
     const r2Values: Record<string, string | undefined> = {};
-    r2Keys.forEach(key => {
+    r2Keys.forEach((key) => {
       r2Values[key] = process.env[key] ? "SET" : "MISSING";
     });
     res.json({
       r2_configured: r2Keys.length === 4,
       r2_variables: r2Values,
-      all_r2_keys: r2Keys
+      all_r2_keys: r2Keys,
     });
   });
 
