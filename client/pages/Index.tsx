@@ -406,30 +406,32 @@ export default function Index() {
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
       <Header />
 
       <main className="flex-1 w-full">
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-background via-card to-background pt-16 pb-12 md:pt-24 md:pb-20 border-b border-border/50">
+        <div className="bg-gradient-to-br from-background via-card/50 to-background pt-12 pb-8 md:pt-20 md:pb-16 border-b border-border/50">
           <div className="max-w-5xl mx-auto px-4">
-            <h1 className="text-6xl md:text-7xl font-black mb-4 text-foreground tracking-tighter leading-none">
-              Doxing Dot Life
-            </h1>
-            <p className="text-2xl md:text-3xl font-bold text-foreground mb-12 max-w-3xl">
-              Find if you or someone you know have been Doxed
-            </p>
+            <div className="animate-fadeIn" style={{ animationDelay: "0.1s" }}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 text-foreground tracking-tighter leading-tight">
+                🔍 Doxing Dot Life
+              </h1>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-8 max-w-3xl">
+                Find if you or someone you know have been Doxed
+              </p>
+            </div>
 
             {/* Search Bar */}
-            <div className="relative mb-12">
+            <div className="relative mb-10 animate-fadeIn" style={{ animationDelay: "0.2s" }}>
               <input
                 type="text"
-                placeholder="Search for doxed individuals..."
+                placeholder="Search for individuals..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-6 py-4 bg-card border-2 border-border hover:border-accent/50 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-lg transition-colors"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-card border-2 border-border hover:border-accent/50 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-base sm:text-lg transition-all shadow-md hover:shadow-lg"
               />
-              <Search className="absolute right-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-muted-foreground" />
+              <Search className="absolute right-4 sm:right-5 top-1/2 transform -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground pointer-events-none" />
             </div>
 
             {/* Categories Section */}
