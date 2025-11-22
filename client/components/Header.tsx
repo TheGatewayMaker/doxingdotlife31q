@@ -32,13 +32,6 @@ export default function Header() {
             <Home className="w-5 h-5" />
             Home
           </Link>
-          <Link
-            to="/uppostpanel"
-            className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-accent transition-colors"
-          >
-            <Upload className="w-5 h-5" />
-            Upload
-          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
