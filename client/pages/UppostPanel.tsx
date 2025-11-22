@@ -381,7 +381,7 @@ export default function UppostPanel() {
                 <label htmlFor="media-upload" className="cursor-pointer block">
                   {media ? (
                     <div className="space-y-3">
-                      <div className="text-3xl">✅</div>
+                      <div className="text-3xl">✓</div>
                       <p className="text-sm font-bold text-accent">
                         {media.name}
                       </p>
@@ -405,12 +405,12 @@ export default function UppostPanel() {
               </div>
 
               {mediaPreview && (
-                <div className="mt-6 relative">
+                <div className="mt-6 relative group">
                   {media?.type.startsWith("image/") ? (
                     <img
                       src={mediaPreview}
                       alt="Preview"
-                      className="max-h-64 rounded-xl mx-auto border border-border"
+                      className="max-h-64 rounded-xl mx-auto border border-border object-cover"
                     />
                   ) : (
                     <video
@@ -419,18 +419,28 @@ export default function UppostPanel() {
                       className="max-h-64 rounded-xl mx-auto border border-border"
                     />
                   )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMedia(null);
+                      setMediaPreview("");
+                    }}
+                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               )}
             </div>
 
             {uploadMessage && (
-              <div className="p-4 bg-green-900/20 border border-green-600/50 rounded-lg text-green-400 text-sm font-medium flex items-center gap-2">
+              <div className="p-4 bg-green-900/20 border border-green-600/50 rounded-lg text-green-400 text-sm font-medium flex items-center gap-2 animate-fadeIn">
                 <span>✓</span> {uploadMessage}
               </div>
             )}
 
             {uploadError && (
-              <div className="p-4 bg-destructive/10 border border-destructive/50 rounded-lg text-destructive text-sm font-medium flex items-center gap-2">
+              <div className="p-4 bg-destructive/10 border border-destructive/50 rounded-lg text-destructive text-sm font-medium flex items-center gap-2 animate-fadeIn">
                 <span>⚠️</span> {uploadError}
               </div>
             )}
@@ -438,7 +448,7 @@ export default function UppostPanel() {
             <button
               type="submit"
               disabled={uploading}
-              className="w-full px-4 py-4 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+              className="w-full px-4 py-4 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-md hover:shadow-lg"
             >
               {uploading ? "📤 Uploading..." : "📤 Upload Post"}
             </button>
