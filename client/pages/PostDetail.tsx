@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MediaViewer from "@/components/MediaViewer";
 import { Post } from "@shared/api";
+import { GlobeIcon, MapPinIcon, ServerIcon } from "@/components/Icons";
 
 export default function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
@@ -87,7 +88,18 @@ export default function PostDetail() {
             onClick={() => navigate("/")}
             className="flex items-center gap-2 px-4 py-2 mb-8 text-accent hover:text-accent/80 transition-colors font-medium animate-fadeIn"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
             Back to Home
           </button>
 
@@ -129,18 +141,21 @@ export default function PostDetail() {
               {/* Metadata */}
               <div className="flex flex-wrap gap-3 mb-8">
                 {post.country && (
-                  <span className="inline-block bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-semibold">
-                    🌍 {post.country}
+                  <span className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-semibold">
+                    <GlobeIcon className="w-4 h-4" />
+                    {post.country}
                   </span>
                 )}
                 {post.city && (
-                  <span className="inline-block bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-semibold">
-                    🏙️ {post.city}
+                  <span className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-semibold">
+                    <MapPinIcon className="w-4 h-4" />
+                    {post.city}
                   </span>
                 )}
                 {post.server && (
-                  <span className="inline-block bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-semibold">
-                    🖥️ {post.server}
+                  <span className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-semibold">
+                    <ServerIcon className="w-4 h-4" />
+                    {post.server}
                   </span>
                 )}
               </div>

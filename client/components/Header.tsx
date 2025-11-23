@@ -1,21 +1,20 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X, Home } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { SearchIcon, HomeIcon } from "@/components/Icons";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="w-full bg-card border-b border-border shadow-md animate-fadeIn">
+    <header className="w-full bg-card/80 backdrop-blur-sm border-b border-border shadow-md animate-fadeIn">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link
           to="/"
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
           <div className="w-10 h-10 bg-gradient-to-br from-accent to-accent/80 rounded-lg flex items-center justify-center shadow-md">
-            <span className="text-accent-foreground font-black text-lg">
-              🔍
-            </span>
+            <SearchIcon className="text-accent-foreground w-5 h-5" />
           </div>
           <span className="font-black text-lg text-foreground hidden sm:inline">
             Doxing Dot Life
@@ -31,7 +30,7 @@ export default function Header() {
             to="/"
             className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-accent transition-colors"
           >
-            <Home className="w-5 h-5" />
+            <HomeIcon className="w-5 h-5" />
             Home
           </Link>
         </nav>
@@ -56,7 +55,7 @@ export default function Header() {
               onClick={() => setIsMenuOpen(false)}
               className="flex items-center gap-3 w-full px-4 py-3 text-foreground font-semibold hover:bg-muted rounded-lg transition-colors"
             >
-              <Home className="w-5 h-5" />
+              <HomeIcon className="w-5 h-5" />
               Home
             </Link>
           </nav>

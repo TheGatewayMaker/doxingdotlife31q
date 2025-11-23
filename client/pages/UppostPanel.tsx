@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Upload, LogOut, Image, X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { UploadIcon, ImageIcon } from "@/components/Icons";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -27,8 +28,10 @@ export default function UppostPanel() {
   const [server, setServer] = useState("");
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
-  const [media, setMedia] = useState<File | null>(null);
-  const [mediaPreview, setMediaPreview] = useState<string>("");
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [mediaPreviews, setMediaPreviews] = useState<
+    Array<{ file: File; preview: string; type: string }>
+  >([]);
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
@@ -70,15 +73,30 @@ export default function UppostPanel() {
   };
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setMedia(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMediaPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      newFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setMediaPreviews((prev) => [
+            ...prev,
+            {
+              file,
+              preview: reader.result as string,
+              type: file.type,
+            },
+          ]);
+        };
+        reader.readAsDataURL(file);
+      });
+      setMediaFiles((prev) => [...prev, ...newFiles]);
     }
+  };
+
+  const removeMediaFile = (index: number) => {
+    setMediaFiles((prev) => prev.filter((_, i) => i !== index));
+    setMediaPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const resetForm = () => {
@@ -89,8 +107,8 @@ export default function UppostPanel() {
     setServer("");
     setThumbnail(null);
     setThumbnailPreview("");
-    setMedia(null);
-    setMediaPreview("");
+    setMediaFiles([]);
+    setMediaPreviews([]);
     setUploadMessage("");
     setUploadError("");
   };
@@ -100,9 +118,9 @@ export default function UppostPanel() {
     setUploadError("");
     setUploadMessage("");
 
-    if (!title || !description || !media || !thumbnail) {
+    if (!title || !description || mediaFiles.length === 0 || !thumbnail) {
       setUploadError(
-        "Please fill in all required fields including thumbnail and media",
+        "Please fill in all required fields including thumbnail and at least one media file",
       );
       return;
     }
@@ -114,7 +132,10 @@ export default function UppostPanel() {
     formData.append("city", city);
     formData.append("server", server);
     formData.append("thumbnail", thumbnail);
-    formData.append("media", media);
+
+    mediaFiles.forEach((file) => {
+      formData.append("media", file);
+    });
 
     setUploading(true);
 
@@ -150,7 +171,7 @@ export default function UppostPanel() {
           >
             <div className="bg-card border border-border rounded-xl p-10 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="mb-2 w-10 h-10 bg-accent rounded-lg flex items-center justify-center shadow-md">
-                <Upload className="w-5 h-5 text-accent-foreground" />
+                <UploadIcon className="w-5 h-5 text-accent-foreground" />
               </div>
               <h1 className="text-4xl font-black mb-2 text-foreground">
                 Uppost Panel
@@ -285,7 +306,15 @@ export default function UppostPanel() {
                 >
                   {thumbnail ? (
                     <div className="space-y-3">
-                      <div className="text-3xl">✓</div>
+                      <svg
+                        className="w-6 h-6 mx-auto text-accent"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
                       <p className="text-sm font-bold text-accent">
                         {thumbnail.name}
                       </p>
@@ -296,7 +325,7 @@ export default function UppostPanel() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <Image className="w-10 h-10 mx-auto text-muted-foreground" />
+                      <ImageIcon className="w-10 h-10 mx-auto text-muted-foreground" />
                       <p className="text-sm font-bold text-foreground">
                         Click to upload thumbnail
                       </p>
@@ -377,67 +406,86 @@ export default function UppostPanel() {
             {/* Media Upload */}
             <div>
               <label className="block text-sm font-bold mb-3 text-foreground">
-                Media File <span className="text-destructive">*</span>
+                Media Files <span className="text-destructive">*</span>
               </label>
               <div className="border-2 border-dashed border-border rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 transition-all">
                 <input
                   type="file"
                   onChange={handleMediaChange}
                   accept="image/*,video/*"
+                  multiple
                   className="hidden"
                   id="media-upload"
                 />
                 <label htmlFor="media-upload" className="cursor-pointer block">
-                  {media ? (
+                  {mediaFiles.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="text-3xl">✓</div>
+                      <svg
+                        className="w-6 h-6 mx-auto text-accent"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
                       <p className="text-sm font-bold text-accent">
-                        {media.name}
+                        {mediaFiles.length} file
+                        {mediaFiles.length !== 1 ? "s" : ""} selected
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {(media.size / 1024 / 1024).toFixed(2)} MB • Ready to
-                        upload
+                        Click to add more files
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <Upload className="w-10 h-10 mx-auto text-muted-foreground" />
+                      <UploadIcon className="w-10 h-10 mx-auto text-muted-foreground" />
                       <p className="text-sm font-bold text-foreground">
-                        Click to upload media
+                        Click to upload media files
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Images and videos supported (Max 100MB)
+                        Images and videos supported (Max 100MB each)
                       </p>
                     </div>
                   )}
                 </label>
               </div>
 
-              {mediaPreview && (
-                <div className="mt-6 relative group">
-                  {media?.type.startsWith("image/") ? (
-                    <img
-                      src={mediaPreview}
-                      alt="Preview"
-                      className="max-h-64 rounded-xl mx-auto border border-border object-cover"
-                    />
-                  ) : (
-                    <video
-                      src={mediaPreview}
-                      controls
-                      className="max-h-64 rounded-xl mx-auto border border-border"
-                    />
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMedia(null);
-                      setMediaPreview("");
-                    }}
-                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+              {mediaPreviews.length > 0 && (
+                <div className="mt-6">
+                  <div className="mb-4">
+                    <p className="text-sm font-semibold text-foreground mb-3">
+                      Uploaded Media ({mediaPreviews.length})
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {mediaPreviews.map((media, idx) => (
+                        <div key={idx} className="relative group">
+                          {media.type.startsWith("image/") ? (
+                            <img
+                              src={media.preview}
+                              alt={`Preview ${idx}`}
+                              className="w-full aspect-square rounded-lg border border-border object-cover"
+                            />
+                          ) : (
+                            <video
+                              src={media.preview}
+                              className="w-full aspect-square rounded-lg border border-border object-cover bg-muted"
+                            />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeMediaFile(idx)}
+                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                          <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                            {idx + 1}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -457,9 +505,10 @@ export default function UppostPanel() {
             <button
               type="submit"
               disabled={uploading}
-              className="w-full px-4 py-4 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-md hover:shadow-lg"
+              className="w-full px-4 py-4 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
             >
-              {uploading ? "📤 Uploading..." : "📤 Upload Post"}
+              <UploadIcon className="w-5 h-5" />
+              {uploading ? "Uploading..." : "Upload Post"}
             </button>
           </form>
         </div>

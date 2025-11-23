@@ -62,47 +62,48 @@
   }
 
   .dark {
-    --background: 210 35% 5%;
-    --foreground: 210 50% 96%;
+    --background: 230 10% 7%;
+    --foreground: 230 15% 92%;
 
-    --card: 210 30% 11%;
-    --card-foreground: 210 50% 96%;
+    --card: 230 15% 13%;
+    --card-foreground: 230 15% 92%;
 
-    --popover: 210 35% 5%;
-    --popover-foreground: 210 50% 96%;
+    --popover: 230 10% 7%;
+    --popover-foreground: 230 15% 92%;
 
-    --primary: 210 50% 96%;
-    --primary-foreground: 210 35% 5%;
+    --primary: 230 15% 92%;
+    --primary-foreground: 230 10% 7%;
 
-    --secondary: 210 28% 20%;
-    --secondary-foreground: 210 50% 96%;
+    --secondary: 230 12% 22%;
+    --secondary-foreground: 230 15% 92%;
 
-    --muted: 210 28% 20%;
-    --muted-foreground: 210 20% 65%;
+    --muted: 230 12% 22%;
+    --muted-foreground: 230 10% 60%;
 
-    --accent: 220 95% 58%;
-    --accent-foreground: 210 35% 5%;
+    --accent: 248 88% 62%;
+    --accent-foreground: 230 10% 7%;
 
     --destructive: 0 75% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 230 15% 92%;
 
-    --border: 210 25% 18%;
-    --input: 210 30% 11%;
-    --ring: 220 95% 58%;
-    --sidebar-background: 210 35% 5%;
-    --sidebar-foreground: 210 50% 96%;
-    --sidebar-primary: 220 95% 58%;
-    --sidebar-primary-foreground: 210 35% 5%;
-    --sidebar-accent: 210 28% 20%;
-    --sidebar-accent-foreground: 210 50% 96%;
-    --sidebar-border: 210 25% 18%;
-    --sidebar-ring: 220 95% 58%;
+    --border: 230 12% 18%;
+    --input: 230 15% 13%;
+    --ring: 248 88% 62%;
+    --sidebar-background: 230 10% 7%;
+    --sidebar-foreground: 230 15% 92%;
+    --sidebar-primary: 248 88% 62%;
+    --sidebar-primary-foreground: 230 10% 7%;
+    --sidebar-accent: 230 12% 22%;
+    --sidebar-accent-foreground: 230 15% 92%;
+    --sidebar-border: 230 12% 18%;
+    --sidebar-ring: 248 88% 62%;
   }
 }
 
 html {
-  background-color: hsl(var(--background));
+  background: linear-gradient(135deg, #0f0e17 0%, #1a1826 50%, #0f0e17 100%);
   color: hsl(var(--foreground));
+  min-height: 100vh;
 }
 
 @layer base {
@@ -111,7 +112,9 @@ html {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: linear-gradient(135deg, #0f0e17 0%, #1a1826 50%, #0f0e17 100%);
+    min-height: 100vh;
   }
 
   h1,

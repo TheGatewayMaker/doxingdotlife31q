@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
-import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Post, PostsResponse } from "@shared/api";
+import {
+  SearchIcon,
+  FilterIcon,
+  GlobeIcon,
+  MapPinIcon,
+  ServerIcon,
+  FireIcon,
+  CloseIcon,
+} from "@/components/Icons";
 
 const COUNTRIES = [
   "Afghanistan",
@@ -328,6 +336,8 @@ export default function Index() {
   const [countrySearch, setCountrySearch] = useState("");
   const [citySearch, setCitySearch] = useState("");
   const [serverSearch, setServerSearch] = useState("");
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [hasSearchFilters, setHasSearchFilters] = useState(false);
 
   const availableCities = selectedCountry
     ? (CITIES_BY_COUNTRY[selectedCountry] || []).filter((city) =>
@@ -345,6 +355,7 @@ export default function Index() {
 
   useEffect(() => {
     const loadPosts = async () => {
+      setIsLoadingPosts(true);
       try {
         const response = await fetch("/api/posts");
         const data: PostsResponse = await response.json();
@@ -352,6 +363,8 @@ export default function Index() {
       } catch (error) {
         console.error("Error loading posts:", error);
         setPosts([]);
+      } finally {
+        setIsLoadingPosts(false);
       }
     };
 
@@ -372,6 +385,9 @@ export default function Index() {
 
   useEffect(() => {
     let filtered = posts;
+    const hasFilters =
+      !!searchQuery || !!selectedCountry || !!selectedCity || !!selectedServer;
+    setHasSearchFilters(hasFilters);
 
     if (searchQuery) {
       filtered = filtered.filter(
@@ -434,7 +450,7 @@ export default function Index() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-card border-2 border-border hover:border-accent/50 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-base sm:text-lg transition-all shadow-md hover:shadow-lg"
               />
-              <Search className="absolute right-4 sm:right-5 top-1/2 transform -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground pointer-events-none" />
+              <SearchIcon className="absolute right-4 sm:right-5 top-1/2 transform -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground pointer-events-none" />
             </div>
 
             {/* Categories Section */}
@@ -442,14 +458,18 @@ export default function Index() {
               className="mb-0 animate-fadeIn"
               style={{ animationDelay: "0.3s" }}
             >
-              <h3 className="text-sm font-black text-foreground mb-6 uppercase tracking-widest">
-                📂 Filter by Category
-              </h3>
+              <div className="flex items-center gap-2 mb-6">
+                <FilterIcon className="w-5 h-5 text-accent" />
+                <h3 className="text-sm font-black text-foreground uppercase tracking-widest">
+                  Filter by Category
+                </h3>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {/* Country Dropdown */}
                 <div className="relative group">
-                  <label className="text-sm font-bold text-foreground block mb-2">
-                    🌍 By Country
+                  <label className="text-sm font-bold text-foreground block mb-3 flex items-center gap-2">
+                    <GlobeIcon className="w-4 h-4 text-accent" />
+                    By Country
                   </label>
                   <input
                     type="text"
@@ -491,16 +511,18 @@ export default function Index() {
                         setCountrySearch("");
                       }}
                       className="absolute top-3 right-3 text-accent hover:text-accent/80 transition-colors"
+                      title="Clear selection"
                     >
-                      ✕
+                      <CloseIcon className="w-4 h-4" />
                     </button>
                   )}
                 </div>
 
                 {/* City Dropdown */}
                 <div className="relative group">
-                  <label className="text-sm font-bold text-foreground block mb-2">
-                    🏙️ By City
+                  <label className="text-sm font-bold text-foreground block mb-3 flex items-center gap-2">
+                    <MapPinIcon className="w-4 h-4 text-accent" />
+                    By City
                   </label>
                   <input
                     type="text"
@@ -538,16 +560,18 @@ export default function Index() {
                         setCitySearch("");
                       }}
                       className="absolute top-3 right-3 text-accent hover:text-accent/80 transition-colors"
+                      title="Clear selection"
                     >
-                      ✕
+                      <CloseIcon className="w-4 h-4" />
                     </button>
                   )}
                 </div>
 
                 {/* Server Dropdown */}
                 <div className="relative group">
-                  <label className="text-sm font-bold text-foreground block mb-2">
-                    🖥️ By Server
+                  <label className="text-sm font-bold text-foreground block mb-3 flex items-center gap-2">
+                    <ServerIcon className="w-4 h-4 text-accent" />
+                    By Server
                   </label>
                   <input
                     type="text"
@@ -587,8 +611,9 @@ export default function Index() {
                         setServerSearch("");
                       }}
                       className="absolute top-3 right-3 text-accent hover:text-accent/80 transition-colors"
+                      title="Clear selection"
                     >
-                      ✕
+                      <CloseIcon className="w-4 h-4" />
                     </button>
                   )}
                 </div>
@@ -600,16 +625,43 @@ export default function Index() {
         {/* Hot & Recent Posts */}
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="mb-12 animate-fadeIn">
-            <h2 className="text-5xl md:text-6xl font-black mb-3">
-              {filteredPosts.length === 0
-                ? "No Posts Found"
-                : "🔥 Hot & Recent Posts"}
-            </h2>
-            <p className="text-muted-foreground">
-              {filteredPosts.length === 0
-                ? "Try adjusting your search filters"
-                : `Showing ${displayedPosts.length} of ${filteredPosts.length} posts`}
-            </p>
+            {isLoadingPosts ? (
+              <>
+                <h2 className="text-5xl md:text-6xl font-black mb-3 flex items-center gap-3">
+                  <span className="inline-block animate-spin">
+                    <div className="w-10 h-10 border-3 border-muted border-t-accent rounded-full"></div>
+                  </span>
+                  Loading Posts
+                </h2>
+                <p className="text-muted-foreground">
+                  Fetching the latest posts for you...
+                </p>
+              </>
+            ) : filteredPosts.length === 0 ? (
+              <>
+                <h2 className="text-5xl md:text-6xl font-black mb-3">
+                  No Posts Found
+                </h2>
+                <p className="text-muted-foreground">
+                  {hasSearchFilters
+                    ? "Try adjusting your search filters"
+                    : "No posts available at the moment"}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-3">
+                  <FireIcon className="w-8 h-8 text-accent" />
+                  <h2 className="text-5xl md:text-6xl font-black">
+                    Hot & Recent Posts
+                  </h2>
+                </div>
+                <p className="text-muted-foreground mt-3">
+                  Showing {displayedPosts.length} of {filteredPosts.length}{" "}
+                  posts
+                </p>
+              </>
+            )}
           </div>
 
           {displayedPosts.length > 0 ? (
@@ -659,18 +711,21 @@ export default function Index() {
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {post.country && (
-                          <span className="inline-block bg-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium">
-                            🌍 {post.country}
+                          <span className="inline-flex items-center gap-1 bg-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                            <GlobeIcon className="w-3 h-3" />
+                            {post.country}
                           </span>
                         )}
                         {post.city && (
-                          <span className="inline-block bg-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium">
-                            🏙️ {post.city}
+                          <span className="inline-flex items-center gap-1 bg-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                            <MapPinIcon className="w-3 h-3" />
+                            {post.city}
                           </span>
                         )}
                         {post.server && (
-                          <span className="inline-block bg-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium">
-                            🖥️ {post.server}
+                          <span className="inline-flex items-center gap-1 bg-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                            <ServerIcon className="w-3 h-3" />
+                            {post.server}
                           </span>
                         )}
                       </div>
