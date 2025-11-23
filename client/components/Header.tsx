@@ -18,13 +18,13 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-card/80 backdrop-blur-sm border-b border-border shadow-md animate-fadeIn">
+    <header className="w-full bg-gradient-to-r from-card/95 to-card/80 backdrop-blur-md border-b border-yellow-500/30 shadow-lg animate-fadeIn">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link
           to="/"
-          className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+          className="flex items-center gap-3 hover:opacity-90 transition-opacity group"
         >
-          <div className="w-10 h-10 rounded-full overflow-hidden shadow-md flex-shrink-0">
+          <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg flex-shrink-0 border border-yellow-500/50 group-hover:border-yellow-500 transition-colors">
             <img
               src="https://i.ibb.co/rG8yDddq/doxingdotlifelogogeniune888175141.png"
               alt="Doxing Dot Life Logo"
