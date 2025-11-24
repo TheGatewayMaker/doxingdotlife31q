@@ -240,7 +240,7 @@ export default function UppostPanel() {
                 </h1>
                 <p className="text-base sm:text-lg md:text-xl font-semibold text-muted-foreground mb-4">
                   Logged in as:{" "}
-                  <span className="text-accent font-bold">{username}</span>
+                  <span className="text-accent font-bold">{email}</span>
                 </p>
                 <div className="flex flex-wrap gap-3 items-center">
                   <span className="inline-block px-3 py-1.5 bg-accent/20 text-accent font-semibold text-sm rounded-full">
