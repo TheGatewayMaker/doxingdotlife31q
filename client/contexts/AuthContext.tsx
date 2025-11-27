@@ -16,6 +16,7 @@ interface AuthContextType {
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
+  getIdToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -70,6 +71,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return !!user;
   }, [user]);
 
+  const getIdToken = useCallback(async () => {
+    if (!user) return null;
+    try {
+      return await user.getIdToken();
+    } catch (error) {
+      console.error("Error getting ID token:", error);
+      return null;
+    }
+  }, [user]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -80,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         loginWithGoogle,
         logout,
         checkAuth,
+        getIdToken,
       }}
     >
       {children}
