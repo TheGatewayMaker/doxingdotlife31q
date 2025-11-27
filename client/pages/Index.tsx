@@ -338,6 +338,7 @@ export default function Index() {
   const [serverSearch, setServerSearch] = useState("");
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [hasSearchFilters, setHasSearchFilters] = useState(false);
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
 
   const availableCities = selectedCountry
     ? (CITIES_BY_COUNTRY[selectedCountry] || []).filter((city) =>
@@ -352,6 +353,25 @@ export default function Index() {
   const filteredServers = servers.filter((server) =>
     server.toLowerCase().includes(serverSearch.toLowerCase()),
   );
+
+  const searchSuggestions = searchQuery
+    ? posts
+        .filter(
+          (post) =>
+            post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            post.description.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+        .sort((a, b) => {
+          const aIndex = a.title
+            .toLowerCase()
+            .indexOf(searchQuery.toLowerCase());
+          const bIndex = b.title
+            .toLowerCase()
+            .indexOf(searchQuery.toLowerCase());
+          return aIndex - bIndex;
+        })
+        .slice(0, 8)
+    : [];
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -448,9 +468,45 @@ export default function Index() {
                 placeholder="Search Doxed Individuals"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowSearchSuggestions(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowSearchSuggestions(false), 150)
+                }
                 className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-slate-800 border-2 border-slate-700 hover:border-blue-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/30"
               />
               <SearchIcon className="absolute right-4 sm:right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+
+              {/* Search Suggestions Dropdown */}
+              {showSearchSuggestions &&
+                searchQuery &&
+                searchSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg z-50 max-h-64 overflow-y-auto shadow-lg">
+                    {searchSuggestions.map((post) => (
+                      <button
+                        key={post.id}
+                        onClick={() => {
+                          navigate(`/post/${post.id}`);
+                          setShowSearchSuggestions(false);
+                        }}
+                        className="w-full text-left px-4 py-3 hover:bg-blue-600/30 border-b border-slate-700 last:border-b-0 text-white text-sm transition-all duration-200 flex items-start gap-3"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-blue-300 truncate">
+                            {post.title}
+                          </p>
+                          <p className="text-xs text-gray-400 line-clamp-1">
+                            {post.description}
+                          </p>
+                        </div>
+                        {post.nsfw && (
+                          <span className="inline-flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-shrink-0 whitespace-nowrap">
+                            ⚠️ NSFW
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
             </div>
 
             {/* Categories Section */}
@@ -677,7 +733,7 @@ export default function Index() {
                         <img
                           src={post.thumbnail}
                           alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-cover"
                           onError={(e) => {
                             const img = e.target as HTMLImageElement;
                             img.style.display = "none";
