@@ -245,21 +245,15 @@ export default function SimpleMediaGallery({
                 <video
                   ref={videoRef}
                   controls
+                  controlsList="nodownload"
                   preload="metadata"
-                  className="w-full max-h-[500px] object-contain bg-black"
+                  className="w-full max-h-[600px] object-contain bg-black"
                   crossOrigin="anonymous"
-                  poster={thumbnails[currentMedia.name]}
+                  playsInline
                 >
                   <source src={currentMedia.url} type={currentMedia.type} />
                   Your browser does not support the video tag.
                 </video>
-                <button
-                  onClick={handleFullscreen}
-                  className="absolute top-4 right-4 bg-black/70 hover:bg-black/90 text-white p-2.5 rounded-lg transition-colors z-10"
-                  title="Fullscreen"
-                >
-                  <Maximize2 className="w-5 h-5" />
-                </button>
               </div>
             )}
 
