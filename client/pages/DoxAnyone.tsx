@@ -24,30 +24,30 @@ export default function DoxAnyone() {
 
           {/* Pricing Section */}
           <div className="bg-[#1a1a1a] border-2 border-[#666666] rounded-lg p-4 sm:p-6 mb-6 sm:mb-8">
-            <h2 className="text-lg sm:text-xl font-bold mb-4 text-white">
+            <h2 className="text-lg sm:text-xl font-black mb-4 text-white">
               Pricing
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#0088CC] hover:border-[#0099DD] hover:shadow-lg hover:shadow-[#0088CC]/20 transition-all duration-300">
-                <p className="text-xs font-semibold text-[#0088CC] mb-1">
-                  PAKISTAN
+              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#00A8E8] hover:border-[#00C4FF] hover:shadow-lg hover:shadow-[#00A8E8]/30 transition-all duration-300">
+                <p className="text-xs font-black text-[#00A8E8] mb-1 uppercase tracking-wider">
+                  United States
                 </p>
-                <p className="text-xl font-bold text-[#0088CC]">299</p>
-                <p className="text-xs text-[#0088CC] font-semibold">PKR</p>
+                <p className="text-2xl font-black text-[#00A8E8]">$ 1.10</p>
+                <p className="text-xs text-[#00A8E8] font-bold">USD</p>
               </div>
-              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#0088CC] hover:border-[#0099DD] hover:shadow-lg hover:shadow-[#0088CC]/20 transition-all duration-300">
-                <p className="text-xs font-semibold text-[#0088CC] mb-1">
-                  UNITED STATES
+              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#FF9500] hover:border-[#FFB84D] hover:shadow-lg hover:shadow-[#FF9500]/30 transition-all duration-300">
+                <p className="text-xs font-black text-[#FFB84D] mb-1 uppercase tracking-wider">
+                  India
                 </p>
-                <p className="text-xl font-bold text-[#0088CC]">1.10</p>
-                <p className="text-xs text-[#0088CC] font-semibold">USD</p>
+                <p className="text-2xl font-black text-[#FFB84D]">₹ 99</p>
+                <p className="text-xs text-[#FFB84D] font-bold">INR</p>
               </div>
-              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#0088CC] hover:border-[#0099DD] hover:shadow-lg hover:shadow-[#0088CC]/20 transition-all duration-300">
-                <p className="text-xs font-semibold text-[#0088CC] mb-1">
-                  INDIA
+              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#06D6A0] hover:border-[#2AE8B8] hover:shadow-lg hover:shadow-[#06D6A0]/30 transition-all duration-300">
+                <p className="text-xs font-black text-[#2AE8B8] mb-1 uppercase tracking-wider">
+                  Pakistan
                 </p>
-                <p className="text-xl font-bold text-[#0088CC]">99</p>
-                <p className="text-xs text-[#0088CC] font-semibold">INR</p>
+                <p className="text-2xl font-black text-[#2AE8B8]">Rs 299</p>
+                <p className="text-xs text-[#2AE8B8] font-bold">PKR</p>
               </div>
             </div>
           </div>
