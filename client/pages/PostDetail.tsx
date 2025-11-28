@@ -48,14 +48,14 @@ export default function PostDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex flex-col animate-fadeIn">
+      <div className="min-h-screen bg-gradient-to-b from-[#000000] via-[#1a1a1a] to-[#000000] text-white flex flex-col animate-fadeIn">
         <Header />
         <main className="flex-1 w-full flex items-center justify-center px-4">
           <div className="text-center">
             <div className="inline-block animate-spin mb-4">
-              <div className="w-14 h-14 border-4 border-gray-600 border-t-gray-300 rounded-full"></div>
+              <div className="w-14 h-14 border-4 border-[#666666] border-t-[#0088CC] rounded-full"></div>
             </div>
-            <p className="text-gray-400 text-lg">Loading post...</p>
+            <p className="text-[#979797] text-lg">Loading post...</p>
           </div>
         </main>
         <Footer />
