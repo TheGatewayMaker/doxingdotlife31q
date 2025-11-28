@@ -504,7 +504,12 @@ export default function AllPosts() {
                   <div
                     key={post.id}
                     onClick={() => navigate(`/post/${post.id}`)}
-                    className="group rounded-xl overflow-hidden transition-all duration-300 cursor-pointer hover:-translate-y-1 animate-scaleUpFadeIn bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] hover:shadow-xl hover:shadow-[#0088CC]/20"
+                    className={cn(
+                      "group rounded-xl overflow-hidden transition-all duration-300 cursor-pointer hover:-translate-y-1 animate-scaleUpFadeIn border hover:shadow-xl",
+                      post.isTrend
+                        ? "bg-gradient-to-br from-[#4a3a1a] via-[#3a2a1a] to-[#2a1a0a] border-[#9d7e1f] hover:border-[#ffd700] hover:shadow-[#ffd700]/20"
+                        : "bg-[#1a1a1a] border-[#666666] hover:border-[#0088CC] hover:shadow-[#0088CC]/20",
+                    )}
                     style={{ animationDelay: `${idx * 0.08}s` }}
                   >
                     {post.thumbnail && (
