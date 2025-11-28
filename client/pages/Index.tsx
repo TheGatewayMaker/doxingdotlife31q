@@ -308,7 +308,8 @@ export default function Index() {
                 Doxing Dot Life
               </h1>
               <p className="text-base sm:text-lg md:text-xl font-medium text-gray-400 mb-6 max-w-3xl">
-                The largest database of exposed individuals. Search, dox, and expose information on anyone in our comprehensive directory.
+                The largest database of exposed individuals. Search, dox, and
+                expose information on anyone in our comprehensive directory.
               </p>
             </div>
 
@@ -328,10 +329,7 @@ export default function Index() {
             </div>
 
             {/* Filters Section */}
-            <div
-              className="animate-fadeIn"
-              style={{ animationDelay: "0.3s" }}
-            >
+            <div className="animate-fadeIn" style={{ animationDelay: "0.3s" }}>
               <p className="text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
                 Refine Your Search
               </p>
@@ -544,22 +542,34 @@ export default function Index() {
                         {post.country && (
                           <span className="inline-flex items-center gap-0.5 px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
                             <GlobeIcon className="w-3 h-3" />
-                            <span className="hidden sm:inline">{post.country}</span>
-                            <span className="sm:hidden">{post.country.substring(0, 3)}</span>
+                            <span className="hidden sm:inline">
+                              {post.country}
+                            </span>
+                            <span className="sm:hidden">
+                              {post.country.substring(0, 3)}
+                            </span>
                           </span>
                         )}
                         {post.city && (
                           <span className="inline-flex items-center gap-0.5 px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
                             <MapPinIcon className="w-3 h-3" />
-                            <span className="hidden sm:inline">{post.city}</span>
-                            <span className="sm:hidden">{post.city.substring(0, 3)}</span>
+                            <span className="hidden sm:inline">
+                              {post.city}
+                            </span>
+                            <span className="sm:hidden">
+                              {post.city.substring(0, 3)}
+                            </span>
                           </span>
                         )}
                         {post.server && (
                           <span className="inline-flex items-center gap-0.5 px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
                             <ServerIcon className="w-3 h-3" />
-                            <span className="hidden sm:inline">{post.server}</span>
-                            <span className="sm:hidden">{post.server.substring(0, 3)}</span>
+                            <span className="hidden sm:inline">
+                              {post.server}
+                            </span>
+                            <span className="sm:hidden">
+                              {post.server.substring(0, 3)}
+                            </span>
                           </span>
                         )}
                       </div>
@@ -612,7 +622,8 @@ export default function Index() {
             <div className="text-center py-16 sm:py-20 animate-fadeIn">
               <div className="text-5xl sm:text-6xl mb-4">🔍</div>
               <p className="text-gray-400 text-sm sm:text-base max-w-lg mx-auto">
-                No posts match your current search filters. Try adjusting your search terms or filters.
+                No posts match your current search filters. Try adjusting your
+                search terms or filters.
               </p>
             </div>
           )}

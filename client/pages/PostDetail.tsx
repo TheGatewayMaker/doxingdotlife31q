@@ -153,16 +153,22 @@ export default function PostDetail() {
               <div className="mb-8 bg-gray-800 border border-gray-700 rounded-xl p-4 sm:p-5 flex items-start gap-3 sm:gap-4 animate-fadeIn">
                 <div className="text-3xl flex-shrink-0">🔞</div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-gray-300 mb-1">NSFW Content Warning</p>
+                  <p className="font-bold text-gray-300 mb-1">
+                    NSFW Content Warning
+                  </p>
                   <p className="text-sm text-gray-500">
-                    This post contains explicit content. Ensure you're viewing in an appropriate and private setting.
+                    This post contains explicit content. Ensure you're viewing
+                    in an appropriate and private setting.
                   </p>
                 </div>
               </div>
             )}
 
             {/* Thumbnail Section */}
-            <section className="mb-10 sm:mb-12 animate-fadeIn" style={{ animationDelay: "0.1s" }}>
+            <section
+              className="mb-10 sm:mb-12 animate-fadeIn"
+              style={{ animationDelay: "0.1s" }}
+            >
               {post.thumbnail && !thumbnailError && (
                 <div className="rounded-xl overflow-hidden border border-gray-700 shadow-2xl max-w-3xl mx-auto">
                   <img

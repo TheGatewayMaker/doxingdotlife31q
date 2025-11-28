@@ -27,12 +27,15 @@ export default function Footer() {
                 />
               </div>
               <div>
-                <h3 className="font-black text-white text-lg">Doxing Dot Life</h3>
+                <h3 className="font-black text-white text-lg">
+                  Doxing Dot Life
+                </h3>
                 <p className="text-xs text-gray-500">Doxing Database</p>
               </div>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed">
-              The largest database of exposed and doxed individuals. Find and share information about anyone.
+              The largest database of exposed and doxed individuals. Find and
+              share information about anyone.
             </p>
           </div>
           <div className="animate-fadeIn" style={{ animationDelay: "0.2s" }}>
@@ -144,7 +147,9 @@ export default function Footer() {
         <div className="border-t border-gray-700 pt-8 sm:pt-10">
           <div className="text-center text-xs sm:text-sm text-gray-600">
             <p>&copy; 2024 - 2027 Doxing Dot Life. All rights reserved.</p>
-            <p className="mt-2 text-gray-700">Find, Dox, Expose - The Database</p>
+            <p className="mt-2 text-gray-700">
+              Find, Dox, Expose - The Database
+            </p>
           </div>
         </div>
       </div>
