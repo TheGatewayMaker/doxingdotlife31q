@@ -64,7 +64,11 @@ export function createServer() {
 
   // Forum API routes
   // Longer timeout for upload endpoint (5 minutes) to handle large files and multiple attachments
-  const uploadTimeout = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const uploadTimeout = (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
     req.setTimeout(5 * 60 * 1000); // 5 minutes
     res.setTimeout(5 * 60 * 1000);
     next();

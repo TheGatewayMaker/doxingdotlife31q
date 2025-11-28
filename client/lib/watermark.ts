@@ -12,7 +12,7 @@ const WATERMARK_FONT = "bold 48px Arial";
  */
 export async function addWatermarkToImage(
   imageUrl: string,
-  imageName: string
+  imageName: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -62,7 +62,7 @@ export async function addWatermarkToImage(
  */
 export async function addWatermarkToVideo(
   videoUrl: string,
-  videoName: string
+  videoName: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -133,7 +133,7 @@ export async function addWatermarkToVideo(
 function applyWatermarkToCanvas(
   ctx: CanvasRenderingContext2D,
   width: number,
-  height: number
+  height: number,
 ): void {
   const diagonal = Math.sqrt(width * width + height * height);
   const angle = Math.atan2(height, width);

@@ -103,9 +103,7 @@ export const handleUpload: RequestHandler = async (req, res) => {
 
           // Validate file exists and has buffer
           if (!mediaFile || !mediaFile.buffer) {
-            throw new Error(
-              `File ${i + 1} is missing or has no buffer data`,
-            );
+            throw new Error(`File ${i + 1} is missing or has no buffer data`);
           }
 
           const sanitizedName = mediaFile.originalname || `media-${i + 1}`;
