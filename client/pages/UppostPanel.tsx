@@ -449,7 +449,7 @@ export default function UppostPanel() {
             </div>
 
             {/* Location Info */}
-            <div className="bg-gradient-to-br from-background/40 to-background/20 border border-border/40 rounded-2xl p-6 md:p-8">
+            <div className="bg-background/40 border border-border/40 rounded-2xl p-6 md:p-8">
               <h3 className="text-sm font-bold text-foreground mb-6 uppercase tracking-wider opacity-75">
                 Location Information (Optional)
               </h3>
