@@ -117,6 +117,8 @@ export default function UppostPanel() {
     setCity("");
     setServer("");
     setNsfw(false);
+    setIsTrend(false);
+    setTrendRank("");
     setThumbnail(null);
     setThumbnailPreview("");
     setMediaFiles([]);
