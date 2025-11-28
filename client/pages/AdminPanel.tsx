@@ -530,12 +530,12 @@ export default function AdminPanel() {
 
       {/* Delete Confirmation Modal */}
       {deletingPostId && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="bg-gradient-to-br from-card to-card/95 border-2 border-border/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl animate-fadeIn">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-red-100 dark:bg-red-900/30">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-card via-card to-card/95 border-2 border-border/60 rounded-2xl max-w-sm w-full p-8 shadow-2xl animate-slideInScale">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-red-600/20 to-red-700/20 border border-red-600/30">
                 <svg
-                  className="h-6 w-6 text-red-600"
+                  className="h-7 w-7 text-red-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -543,31 +543,33 @@ export default function AdminPanel() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                   />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-foreground">
-                Delete Post?
-              </h3>
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-foreground">
+                  Delete Post
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">This action cannot be undone</p>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground mb-6 ml-15">
-              Are you sure you want to delete this post? This action cannot be
-              undone.
+            <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+              You are about to permanently delete this post. All associated media files and data will be removed. Please confirm this action.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeletingPostId(null)}
                 disabled={isDeletingPost}
-                className="flex-1 px-4 py-2 bg-card/60 border-2 border-border/60 text-foreground font-medium rounded-xl hover:bg-muted/60 hover:border-border/80 disabled:opacity-40 transition-all"
+                className="flex-1 px-4 py-2.5 bg-card/80 border-2 border-border/60 text-foreground font-semibold rounded-lg hover:bg-muted/60 hover:border-border/80 disabled:opacity-40 transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeletePost}
                 disabled={isDeletingPost}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-red-600/40 disabled:opacity-40 transition-all flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-red-600/50 disabled:opacity-40 transition-all flex items-center justify-center gap-2"
               >
                 <TrashIcon className="w-4 h-4" />
                 {isDeletingPost ? "Deleting..." : "Delete"}
