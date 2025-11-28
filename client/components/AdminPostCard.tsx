@@ -52,7 +52,7 @@ export default function AdminPostCard({
                   errorDiv.className =
                     "text-center text-muted-foreground flex flex-col items-center justify-center gap-2";
                   errorDiv.innerHTML =
-                    '<div class="text-3xl">🖼️</div><div class="text-xs">Image unavailable</div>';
+                    '<svg class="w-8 h-8 mx-auto text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"></polyline></svg><div class="text-xs">Image unavailable</div>';
                   parent.appendChild(errorDiv);
                 }
               }}
