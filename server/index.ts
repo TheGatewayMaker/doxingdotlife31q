@@ -205,15 +205,20 @@ export function createServer() {
     uploadTimeout,
     authMiddleware,
     (req, res, next) => {
-      upload.fields([
-        { name: "media", maxCount: 100 },
-        { name: "thumbnail", maxCount: 1 },
-      ])(req, res, (err) => {
-        if (err) {
-          return multerErrorHandler(err, req, res, next);
-        }
-        next();
-      });
+      try {
+        upload.fields([
+          { name: "media", maxCount: 100 },
+          { name: "thumbnail", maxCount: 1 },
+        ])(req, res, (err) => {
+          if (err) {
+            return multerErrorHandler(err, req, res, next);
+          }
+          next();
+        });
+      } catch (error) {
+        console.error("Error in upload middleware:", error);
+        return multerErrorHandler(error, req, res, next);
+      }
     },
     handleUpload,
   );
