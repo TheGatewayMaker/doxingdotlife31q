@@ -92,22 +92,6 @@ export function createServer() {
     handleUpload,
   );
 
-  // Multer error handler for upload route
-  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (err instanceof multer.MulterError) {
-      console.error("Multer error:", err);
-      const message =
-        err.code === "FILE_TOO_LARGE"
-          ? "One or more files exceed the maximum size of 500MB"
-          : `File upload error: ${err.message}`;
-      return res.status(400).json({ error: message });
-    } else if (err && err.message && err.message.includes("File")) {
-      console.error("File upload error:", err);
-      return res.status(400).json({ error: err.message });
-    }
-    next(err);
-  });
-
   app.get("/api/posts", handleGetPosts);
   app.get("/api/servers", handleGetServers);
 
