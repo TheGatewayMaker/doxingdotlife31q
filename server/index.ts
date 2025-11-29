@@ -21,7 +21,7 @@ export function createServer() {
   app.use(
     cors({
       origin: "*",
-      methods: ["GET", "POST", "OPTIONS"],
+      methods: ["GET", "POST", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: false,
     }),
