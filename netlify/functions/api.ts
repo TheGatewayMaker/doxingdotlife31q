@@ -7,9 +7,23 @@ let serverlessHandler: any;
 const getApp = () => {
   if (!app) {
     try {
+      console.log(`[${new Date().toISOString()}] Initializing Express server...`);
       app = createServer();
+      console.log(
+        `[${new Date().toISOString()}] ✅ Express server initialized successfully`,
+      );
     } catch (error) {
-      console.error("Failed to create server:", error);
+      console.error(
+        `[${new Date().toISOString()}] ❌ Failed to create server:`,
+        error,
+      );
+      console.error("Environment variables available:", {
+        hasFirebaseProjectId: !!process.env.FIREBASE_PROJECT_ID,
+        hasR2AccessKeyId: !!process.env.R2_ACCESS_KEY_ID,
+        hasR2SecretAccessKey: !!process.env.R2_SECRET_ACCESS_KEY,
+        hasR2AccountId: !!process.env.R2_ACCOUNT_ID,
+        hasR2BucketName: !!process.env.R2_BUCKET_NAME,
+      });
       throw error;
     }
   }
