@@ -273,13 +273,19 @@ export const handleUpload: RequestHandler = async (req, res, next) => {
       return;
     }
   } catch (error) {
-    console.error("Upload error:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(
+      `[${new Date().toISOString()}] ❌ Upload error (general):`,
+      errorMessage,
+    );
+    console.error("Full error details:", error);
     if (!res.headersSent) {
       res.status(500).json({
         error: "Upload failed",
         details:
-          process.env.NODE_ENV === "development" ? errorMessage : undefined,
+          process.env.NODE_ENV === "development"
+            ? errorMessage
+            : "An error occurred during upload. Please check your server configuration.",
       });
       responseSent = true;
     }
