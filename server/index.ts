@@ -88,7 +88,10 @@ export function createServer() {
         r2: {
           configured: r2Validation.isValid,
           message: r2Validation.message,
-          details: process.env.NODE_ENV === "development" ? r2Validation.details : undefined,
+          details:
+            process.env.NODE_ENV === "development"
+              ? r2Validation.details
+              : undefined,
         },
         timestamp: new Date().toISOString(),
       });

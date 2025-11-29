@@ -55,7 +55,9 @@ const getR2Client = (): S3Client => {
       },
     });
 
-    console.log(`[${new Date().toISOString()}] R2 Client initialized successfully with endpoint: ${endpoint}`);
+    console.log(
+      `[${new Date().toISOString()}] R2 Client initialized successfully with endpoint: ${endpoint}`,
+    );
     return client;
   } catch (error) {
     console.error("Failed to initialize R2 client:", error);
@@ -119,7 +121,10 @@ export const validateR2Configuration = async (): Promise<{
       details.bucketAccessible = true;
     } catch (accessError) {
       details.bucketAccessible = false;
-      details.accessError = accessError instanceof Error ? accessError.message : String(accessError);
+      details.accessError =
+        accessError instanceof Error
+          ? accessError.message
+          : String(accessError);
       return {
         isValid: false,
         message: `Cannot access R2 bucket "${bucketName}". Check credentials and bucket name.`,
@@ -203,9 +208,7 @@ export const uploadMediaFile = async (
       `Failed to upload file ${fileName} for post ${postId}:`,
       errorMsg,
     );
-    throw new Error(
-      `Failed to upload file to R2 storage: ${errorMsg}`,
-    );
+    throw new Error(`Failed to upload file to R2 storage: ${errorMsg}`);
   }
 };
 
@@ -319,7 +322,8 @@ export const listPostFiles = async (postId: string): Promise<string[]> => {
 
         continuationToken = response.NextContinuationToken;
       } catch (pageError) {
-        const errorMsg = pageError instanceof Error ? pageError.message : String(pageError);
+        const errorMsg =
+          pageError instanceof Error ? pageError.message : String(pageError);
         console.error(`Error listing files for post ${postId}:`, errorMsg);
         throw pageError;
       }
@@ -328,13 +332,8 @@ export const listPostFiles = async (postId: string): Promise<string[]> => {
     return files.filter((f) => f);
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    console.error(
-      `Failed to list files for post ${postId}:`,
-      errorMsg,
-    );
-    throw new Error(
-      `Failed to list post files from R2 storage: ${errorMsg}`,
-    );
+    console.error(`Failed to list files for post ${postId}:`, errorMsg);
+    throw new Error(`Failed to list post files from R2 storage: ${errorMsg}`);
   }
 };
 
@@ -414,10 +413,7 @@ export const uploadPostMetadataWithThumbnail = async (
     );
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    console.error(
-      `Failed to upload metadata for post ${postId}:`,
-      errorMsg,
-    );
+    console.error(`Failed to upload metadata for post ${postId}:`, errorMsg);
     throw new Error(
       `Failed to upload post metadata to R2 storage: ${errorMsg}`,
     );
@@ -483,7 +479,9 @@ export const deletePostFolder = async (postId: string): Promise<void> => {
     const client = getR2Client();
     const bucketName = getBucketName();
 
-    console.log(`[${new Date().toISOString()}] Starting deletion of post ${postId}`);
+    console.log(
+      `[${new Date().toISOString()}] Starting deletion of post ${postId}`,
+    );
 
     const files = await listPostFiles(postId);
     files.push("metadata.json");
@@ -493,7 +491,9 @@ export const deletePostFolder = async (postId: string): Promise<void> => {
       return;
     }
 
-    console.log(`[${new Date().toISOString()}] Deleting ${files.length} files from post ${postId}`);
+    console.log(
+      `[${new Date().toISOString()}] Deleting ${files.length} files from post ${postId}`,
+    );
 
     const deleteErrors: Array<{ file: string; error: string }> = [];
 
@@ -511,7 +511,8 @@ export const deletePostFolder = async (postId: string): Promise<void> => {
 
         console.log(`✅ Deleted ${key}`);
       } catch (fileError) {
-        const errorMsg = fileError instanceof Error ? fileError.message : String(fileError);
+        const errorMsg =
+          fileError instanceof Error ? fileError.message : String(fileError);
         console.error(`Failed to delete file ${file}:`, errorMsg);
         deleteErrors.push({
           file,
@@ -524,13 +525,17 @@ export const deletePostFolder = async (postId: string): Promise<void> => {
       const errorSummary = deleteErrors
         .map((e) => `${e.file}: ${e.error}`)
         .join("; ");
-      console.error(`Some files failed to delete for post ${postId}: ${errorSummary}`);
+      console.error(
+        `Some files failed to delete for post ${postId}: ${errorSummary}`,
+      );
       throw new Error(
         `Failed to delete ${deleteErrors.length} file(s) from post. Details: ${errorSummary}`,
       );
     }
 
-    console.log(`[${new Date().toISOString()}] ✅ Successfully deleted post ${postId}`);
+    console.log(
+      `[${new Date().toISOString()}] ✅ Successfully deleted post ${postId}`,
+    );
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.error(

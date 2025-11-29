@@ -7,7 +7,9 @@ let serverlessHandler: any;
 const getApp = () => {
   if (!app) {
     try {
-      console.log(`[${new Date().toISOString()}] Initializing Express server...`);
+      console.log(
+        `[${new Date().toISOString()}] Initializing Express server...`,
+      );
       app = createServer();
       console.log(
         `[${new Date().toISOString()}] ✅ Express server initialized successfully`,
@@ -67,8 +69,7 @@ export const handler = async (event: any, context: any) => {
 
     return result;
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error(
       `[${new Date().toISOString()}] ❌ Handler error:`,
       errorMessage,
