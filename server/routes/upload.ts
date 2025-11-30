@@ -74,6 +74,17 @@ export const handleUpload: RequestHandler = async (req, res, next) => {
   let responseSent = false;
 
   try {
+    // Log upload attempt for debugging Netlify issues
+    const isNetlify = process.env.NETLIFY === "true";
+    console.log(
+      `[${new Date().toISOString()}] Upload request received on ${isNetlify ? "NETLIFY" : "LOCAL"}`,
+      {
+        hasFiles: !!req.files,
+        filesType: typeof req.files,
+        filesKeys: req.files ? Object.keys(req.files) : [],
+      },
+    );
+
     // Ensure we have files from multer
     if (!req.files || typeof req.files !== "object") {
       console.error("Invalid files object from multer", {
