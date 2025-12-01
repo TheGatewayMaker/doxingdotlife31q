@@ -9,12 +9,21 @@ const initializeFirebaseAdmin = () => {
   }
 
   const projectId = process.env.FIREBASE_PROJECT_ID;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+  // Handle both literal \n and actual newlines
+  if (privateKey) {
+    // If the key contains literal \n (backslash + n), replace with actual newlines
+    if (privateKey.includes("\\n")) {
+      privateKey = privateKey.replace(/\\n/g, "\n");
+    }
+  }
+
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
   if (!projectId || !privateKey || !clientEmail) {
-    console.warn(
-      "Firebase Admin SDK not fully configured. Some auth features may not work.",
+    console.error(
+      "Firebase Admin SDK configuration missing:",
       {
         hasProjectId: !!projectId,
         hasPrivateKey: !!privateKey,
@@ -25,15 +34,20 @@ const initializeFirebaseAdmin = () => {
     return null;
   }
 
-  firebaseApp = admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId,
-      privateKey,
-      clientEmail,
-    }),
-  });
-
-  return firebaseApp;
+  try {
+    firebaseApp = admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId,
+        privateKey,
+        clientEmail,
+      }),
+    });
+    console.log(`[${new Date().toISOString()}] Firebase Admin SDK initialized for project: ${projectId}`);
+    return firebaseApp;
+  } catch (error) {
+    console.error("Failed to initialize Firebase Admin SDK:", error instanceof Error ? error.message : error);
+    return null;
+  }
 };
 
 /**
