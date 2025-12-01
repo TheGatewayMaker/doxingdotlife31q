@@ -61,39 +61,41 @@ export const uploadFileToR2 = async (
   contentType: string,
   onProgress?: (progress: number) => void,
 ): Promise<void> => {
-  const reader = new FileReader();
-
   return new Promise((resolve, reject) => {
-    reader.onload = async () => {
-      try {
-        const arrayBuffer = reader.result as ArrayBuffer;
-        const blob = new Blob([arrayBuffer], { type: contentType });
+    const xhr = new XMLHttpRequest();
 
-        const response = await fetch(signedUrl, {
-          method: "PUT",
-          body: blob,
-          headers: {
-            "Content-Type": contentType,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            `R2 upload failed: ${response.status} ${response.statusText}`,
-          );
+    if (onProgress) {
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          onProgress(percentComplete);
         }
+      });
+    }
 
+    xhr.addEventListener("load", () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
         resolve();
-      } catch (error) {
-        reject(error);
+      } else {
+        reject(
+          new Error(
+            `R2 upload failed: ${xhr.status} ${xhr.statusText}`,
+          ),
+        );
       }
-    };
+    });
 
-    reader.onerror = () => {
-      reject(new Error("Failed to read file"));
-    };
+    xhr.addEventListener("error", () => {
+      reject(new Error("Network error uploading file to R2"));
+    });
 
-    reader.readAsArrayBuffer(file);
+    xhr.addEventListener("abort", () => {
+      reject(new Error("Upload cancelled"));
+    });
+
+    xhr.open("PUT", signedUrl, true);
+    xhr.setRequestHeader("Content-Type", contentType);
+    xhr.send(file);
   });
 };
 
@@ -160,9 +162,7 @@ export const validateUploadInputs = (
   error?: string;
 } => {
   const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB per file
-  const MAX_TOTAL_SIZE = 150 * 1024 * 1024; // 150MB total
 
-  let totalSize = 0;
   const oversizedFiles: string[] = [];
 
   for (const file of files) {
@@ -171,20 +171,12 @@ export const validateUploadInputs = (
         `${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`,
       );
     }
-    totalSize += file.size;
   }
 
   if (oversizedFiles.length > 0) {
     return {
       valid: false,
       error: `The following files exceed 500MB: ${oversizedFiles.join(", ")}`,
-    };
-  }
-
-  if (totalSize > MAX_TOTAL_SIZE) {
-    return {
-      valid: false,
-      error: `Total upload size (${(totalSize / 1024 / 1024).toFixed(2)}MB) exceeds 150MB limit. Please upload fewer files or use smaller files.`,
     };
   }
 
