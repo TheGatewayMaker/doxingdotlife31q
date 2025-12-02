@@ -237,10 +237,13 @@ export default function UppostPanel() {
 
       // Create abort controller for request timeout handling
       uploadAbortControllerRef.current = new AbortController();
-      const uploadTimeout = setTimeout(() => {
-        uploadAbortControllerRef.current?.abort();
-        console.error("[Upload] Request timeout - aborting upload");
-      }, 35 * 60 * 1000); // 35 minutes (slightly more than server's 30 min timeout)
+      const uploadTimeout = setTimeout(
+        () => {
+          uploadAbortControllerRef.current?.abort();
+          console.error("[Upload] Request timeout - aborting upload");
+        },
+        35 * 60 * 1000,
+      ); // 35 minutes (slightly more than server's 30 min timeout)
 
       let uploadResponse;
       try {
@@ -256,10 +259,7 @@ export default function UppostPanel() {
         clearTimeout(uploadTimeout);
       } catch (fetchError) {
         clearTimeout(uploadTimeout);
-        if (
-          fetchError instanceof Error &&
-          fetchError.name === "AbortError"
-        ) {
+        if (fetchError instanceof Error && fetchError.name === "AbortError") {
           throw new Error(
             "Upload timed out after 35 minutes. Please try again with smaller files.",
           );

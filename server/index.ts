@@ -177,7 +177,8 @@ export function createServer() {
         if (!res.headersSent) {
           res.status(408).json({
             error: "Request timeout",
-            details: "Upload took too long. Please try again with smaller files.",
+            details:
+              "Upload took too long. Please try again with smaller files.",
           });
         }
       });

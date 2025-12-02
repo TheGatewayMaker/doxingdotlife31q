@@ -153,7 +153,8 @@ export const handler = async (event: any, context: any) => {
       // Preserve security headers from Express middleware
       // These are critical for upload functionality
       if (!result.headers["Cross-Origin-Opener-Policy"]) {
-        result.headers["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups";
+        result.headers["Cross-Origin-Opener-Policy"] =
+          "same-origin-allow-popups";
       }
       if (!result.headers["Cross-Origin-Embedder-Policy"]) {
         result.headers["Cross-Origin-Embedder-Policy"] = "require-corp";
