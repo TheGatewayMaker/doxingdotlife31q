@@ -153,16 +153,46 @@ export function createServer() {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    // 10 minutes for large file uploads (7-8 photos)
-    const timeout = 10 * 60 * 1000;
+    // 30 minutes for large file uploads (supports files up to 500MB)
+    // Large uploads may take significant time on slower connections
+    const timeout = 30 * 60 * 1000;
 
     try {
+      // Set socket timeouts on both request and response
       if (req.socket) {
         req.socket.setTimeout(timeout);
+        // Enable TCP keep-alive to prevent connection from being idle-killed
+        req.socket.setKeepAlive(true, 5000);
       }
       if (res.socket) {
         res.socket.setTimeout(timeout);
+        res.socket.setKeepAlive(true, 5000);
       }
+
+      // Add timeout error handling
+      req.on("timeout", () => {
+        console.error(
+          `[${new Date().toISOString()}] Request timeout after ${timeout}ms`,
+        );
+        if (!res.headersSent) {
+          res.status(408).json({
+            error: "Request timeout",
+            details: "Upload took too long. Please try again with smaller files.",
+          });
+        }
+      });
+
+      res.on("timeout", () => {
+        console.error(
+          `[${new Date().toISOString()}] Response timeout after ${timeout}ms`,
+        );
+        if (!res.headersSent) {
+          res.status(408).json({
+            error: "Response timeout",
+            details: "Server response took too long. Please try again.",
+          });
+        }
+      });
     } catch (error) {
       console.error("Error setting socket timeout:", error);
     }
