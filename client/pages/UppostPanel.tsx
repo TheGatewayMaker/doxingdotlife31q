@@ -242,8 +242,9 @@ export default function UppostPanel() {
         console.error("[Upload] Request timeout - aborting upload");
       }, 35 * 60 * 1000); // 35 minutes (slightly more than server's 30 min timeout)
 
+      let uploadResponse;
       try {
-        const uploadResponse = await fetch("/api/upload", {
+        uploadResponse = await fetch("/api/upload", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${idToken}`,
@@ -252,7 +253,6 @@ export default function UppostPanel() {
           body: formData,
           signal: uploadAbortControllerRef.current.signal,
         });
-
         clearTimeout(uploadTimeout);
       } catch (fetchError) {
         clearTimeout(uploadTimeout);
@@ -266,15 +266,6 @@ export default function UppostPanel() {
         }
         throw fetchError;
       }
-      const uploadResponse = await fetch("/api/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-          // Note: Content-Type is NOT set for FormData - browser will set it with correct boundary
-        },
-        body: formData,
-        signal: uploadAbortControllerRef.current.signal,
-      });
 
       console.log(
         `[Upload] Response status: ${uploadResponse.status} ${uploadResponse.statusText}`,
