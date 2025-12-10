@@ -931,12 +931,12 @@ export default function UppostPanel() {
               </div>
 
               {mediaPreviews.length > 0 && (
-                <div className="mt-6">
-                  <div className="mb-4">
-                    <p className="text-sm font-semibold text-foreground mb-3">
+                <div className="mt-4 sm:mt-6">
+                  <div className="mb-3 sm:mb-4">
+                    <p className="text-xs sm:text-sm font-semibold text-foreground mb-2 sm:mb-3">
                       Uploaded Media ({mediaPreviews.length})
                     </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                       {mediaPreviews.map((media, idx) => (
                         <div key={idx} className="relative group">
                           {media.type.startsWith("image/") ? (
