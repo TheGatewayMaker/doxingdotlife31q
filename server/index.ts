@@ -319,7 +319,6 @@ export function createServer() {
   app.post(
     "/api/upload",
     uploadTimeout,
-    optionalAuthMiddleware,
     validateUploadRequest,
     (req, res, next) => {
       try {
