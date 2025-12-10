@@ -128,7 +128,7 @@ export default function Header() {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden p-2 hover:bg-[#666666]/40 active:bg-[#666666]/60 rounded-lg transition-all duration-200 z-50 -mr-2 touch-manipulation"
+          className="lg:hidden p-2 hover:bg-[#666666]/40 active:bg-[#666666]/60 rounded-lg transition-all duration-200 relative touch-manipulation focus:outline-none focus:ring-2 focus:ring-[#0088CC] focus:ring-offset-2 focus:ring-offset-[#000000]"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           aria-label={
             isSidebarOpen ? "Close navigation menu" : "Toggle navigation menu"
@@ -148,17 +148,21 @@ export default function Header() {
           <>
             {/* Overlay */}
             <div
-              className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+              className="fixed inset-0 bg-black/60 lg:hidden animate-fadeIn"
               onClick={closeSidebar}
               role="presentation"
               aria-hidden="true"
+              style={{ zIndex: 999 }}
             />
 
             {/* Sidebar */}
             <div
               id="mobile-menu"
-              className="fixed left-0 top-16 right-0 max-h-[calc(100vh-4rem)] w-full bg-[#0a0a0a] border-b border-[#666666] lg:hidden z-40 animate-slideInDown shadow-2xl flex flex-col overflow-hidden"
-              style={{ animationDuration: "0.3s" }}
+              className="fixed top-0 left-0 right-0 h-screen max-h-screen w-full bg-[#000000] border-b border-[#666666] lg:hidden shadow-2xl flex flex-col overflow-hidden"
+              style={{
+                zIndex: 1000,
+                animation: "slideInDown 0.3s ease-out forwards",
+              }}
               role="navigation"
               aria-label="Mobile navigation"
             >
