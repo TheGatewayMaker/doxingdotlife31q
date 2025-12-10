@@ -75,14 +75,15 @@ export const handleUpload: RequestHandler = async (req, res, next) => {
 
   try {
     // Simple authorization check - just verify user is logged in with authorized email
-    // No token or session validation, just check if req.user exists (set by optionalAuthMiddleware)
+    // The user must be authenticated (either via session or Firebase auth on client)
     if (!req.user || !req.user.email) {
       console.warn(
         `[${new Date().toISOString()}] Upload rejected - user not logged in`,
       );
       if (!res.headersSent) {
         res.status(401).json({
-          error: "You must be logged in to upload posts.",
+          error:
+            "You must be logged in to upload posts. Please sign in and try again.",
         });
         responseSent = true;
       }

@@ -445,25 +445,25 @@ export default function UppostPanel() {
       <Header />
       <main className="flex-1 w-full">
         {/* Hero Section */}
-        <div className="bg-background pt-8 pb-8 md:pt-16 md:pb-12 border-b border-border/50">
+        <div className="bg-background pt-6 pb-6 md:pt-12 md:pb-10 border-b border-border/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0">
               <div
-                className="animate-fadeIn"
+                className="animate-fadeIn flex-1 min-w-0"
                 style={{ animationDelay: "0.1s" }}
               >
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 text-foreground tracking-tighter leading-tight flex items-center gap-2">
-                  <UploadIcon className="w-8 h-8 text-accent" />
-                  Upload Panel
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-2 text-foreground tracking-tighter leading-tight flex items-center gap-2 flex-wrap">
+                  <UploadIcon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-accent flex-shrink-0" />
+                  <span>Upload Panel</span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl font-semibold text-muted-foreground mb-4">
+                <p className="text-xs sm:text-sm md:text-base font-semibold text-muted-foreground mb-3 break-all">
                   Logged in as:{" "}
                   <span className="text-accent font-bold">{email}</span>
                 </p>
-                <div className="flex flex-wrap gap-3 items-center">
-                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600/20 text-green-400 font-semibold text-sm rounded-full border border-green-600/30">
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="inline-flex items-center gap-2 px-2.5 py-1 bg-green-600/20 text-green-400 font-semibold text-xs rounded-full border border-green-600/30">
                     <svg
-                      className="w-4 h-4"
+                      className="w-3 h-3 flex-shrink-0"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -475,24 +475,27 @@ export default function UppostPanel() {
               </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-6 py-3 bg-destructive/90 hover:bg-destructive text-destructive-foreground font-bold rounded-lg transition-all shadow-md hover:shadow-lg active:scale-95 whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-destructive/90 hover:bg-destructive text-destructive-foreground font-bold text-sm sm:text-base rounded-lg transition-all shadow-md hover:shadow-lg active:scale-95 whitespace-nowrap w-full sm:w-auto"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                 Logout
               </button>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <form
             onSubmit={handleUpload}
-            className="bg-card border border-border/50 rounded-2xl p-6 sm:p-8 md:p-12 space-y-8 shadow-2xl hover:shadow-3xl transition-all duration-300 animate-fadeIn backdrop-blur-sm"
+            className="bg-card border border-border/50 rounded-xl sm:rounded-2xl p-5 sm:p-7 md:p-10 space-y-6 sm:space-y-8 shadow-2xl hover:shadow-3xl transition-all duration-300 animate-fadeIn backdrop-blur-sm"
             style={{ animationDelay: "0.2s" }}
           >
             {/* Title */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInDown"
+              style={{ animationDelay: "0.25s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Post Title <span className="text-destructive">*</span>
               </label>
               <div className="relative">
@@ -500,34 +503,40 @@ export default function UppostPanel() {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                   placeholder="Enter post title"
                 />
               </div>
             </div>
 
             {/* Description */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInUp"
+              style={{ animationDelay: "0.27s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Description <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none transition-all duration-200"
-                  rows={5}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none transition-all duration-200 text-sm"
+                  rows={4}
                   placeholder="Enter post description"
                 />
               </div>
             </div>
 
             {/* Thumbnail Upload */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInDown"
+              style={{ animationDelay: "0.29s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Thumbnail Image <span className="text-destructive">*</span>
               </label>
-              <div className="border-2 border-dashed border-border/70 rounded-2xl p-8 text-center cursor-pointer hover:border-accent/70 hover:bg-accent/10 bg-background/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
+              <div className="border-2 border-dashed border-border/70 rounded-lg sm:rounded-2xl p-6 sm:p-8 text-center cursor-pointer hover:border-accent/70 hover:bg-accent/10 bg-background/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
                 <input
                   type="file"
                   onChange={handleThumbnailChange}
@@ -540,9 +549,9 @@ export default function UppostPanel() {
                   className="cursor-pointer block"
                 >
                   {thumbnail ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <svg
-                        className="w-6 h-6 mx-auto text-accent"
+                        className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-accent"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -550,7 +559,7 @@ export default function UppostPanel() {
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      <p className="text-sm font-bold text-accent">
+                      <p className="text-xs sm:text-sm font-bold text-accent break-all px-2">
                         {thumbnail.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -559,9 +568,9 @@ export default function UppostPanel() {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <ImageIcon className="w-10 h-10 mx-auto text-muted-foreground" />
-                      <p className="text-sm font-bold text-foreground">
+                    <div className="space-y-2 sm:space-y-3">
+                      <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 mx-auto text-muted-foreground" />
+                      <p className="text-xs sm:text-sm font-bold text-foreground">
                         Click to upload thumbnail
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -573,11 +582,11 @@ export default function UppostPanel() {
               </div>
 
               {thumbnailPreview && (
-                <div className="mt-6 relative group">
+                <div className="mt-4 sm:mt-6 relative group">
                   <img
                     src={thumbnailPreview}
                     alt="Thumbnail Preview"
-                    className="max-h-48 rounded-xl mx-auto border border-border object-cover"
+                    className="max-h-40 sm:max-h-48 rounded-lg sm:rounded-xl mx-auto border border-border object-cover"
                   />
                   <button
                     type="button"
@@ -585,7 +594,7 @@ export default function UppostPanel() {
                       setThumbnail(null);
                       setThumbnailPreview("");
                     }}
-                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-1.5 sm:p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -594,16 +603,22 @@ export default function UppostPanel() {
             </div>
 
             {/* Location Info */}
-            <div className="bg-background/40 border border-border/40 rounded-2xl p-6 md:p-8">
-              <h3 className="text-sm font-bold text-foreground mb-6 uppercase tracking-wider opacity-75">
+            <div
+              className="bg-background/40 border border-border/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 animate-slideInUp"
+              style={{ animationDelay: "0.3s" }}
+            >
+              <h3 className="text-xs sm:text-sm font-bold text-foreground mb-4 sm:mb-6 uppercase tracking-wider opacity-75">
                 Location Information (Optional)
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Country */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground flex items-center gap-2">
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.35s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground flex items-center gap-2">
                     <svg
-                      className="w-4 h-4 text-accent"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -618,16 +633,19 @@ export default function UppostPanel() {
                     type="text"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="(optional)"
                   />
                 </div>
 
                 {/* City */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground flex items-center gap-2">
+                <div
+                  className="animate-slideInUp"
+                  style={{ animationDelay: "0.37s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground flex items-center gap-2">
                     <svg
-                      className="w-4 h-4 text-accent"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -641,16 +659,19 @@ export default function UppostPanel() {
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="(optional)"
                   />
                 </div>
 
                 {/* Server */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground flex items-center gap-2">
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.39s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground flex items-center gap-2">
                     <svg
-                      className="w-4 h-4 text-accent"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -666,7 +687,7 @@ export default function UppostPanel() {
                     type="text"
                     value={server}
                     onChange={(e) => setServer(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="(optional)"
                   />
                 </div>
@@ -674,119 +695,146 @@ export default function UppostPanel() {
             </div>
 
             {/* Personal Information Section */}
-            <div className="bg-background/40 border border-border/40 rounded-2xl p-6 md:p-8">
-              <h3 className="text-sm font-bold text-foreground mb-6 uppercase tracking-wider opacity-75">
+            <div
+              className="bg-background/40 border border-border/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 animate-slideInUp"
+              style={{ animationDelay: "0.41s" }}
+            >
+              <h3 className="text-xs sm:text-sm font-bold text-foreground mb-4 sm:mb-6 uppercase tracking-wider opacity-75">
                 Personal Information (Optional)
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Discord Username */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.43s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Discord Username
                   </label>
                   <input
                     type="text"
                     value={discordUsername}
                     onChange={(e) => setDiscordUsername(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., user#1234"
                   />
                 </div>
 
                 {/* Discord Name */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.43s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Discord Name
                   </label>
                   <input
                     type="text"
                     value={discordName}
                     onChange={(e) => setDiscordName(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., Display Name"
                   />
                 </div>
 
                 {/* Real Name */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.45s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Real Name
                   </label>
                   <input
                     type="text"
                     value={realName}
                     onChange={(e) => setRealName(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., John Doe"
                   />
                 </div>
 
                 {/* Age */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.45s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Age
                   </label>
                   <input
                     type="text"
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., 25"
                   />
                 </div>
 
                 {/* Email */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.47s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Email
                   </label>
                   <input
                     type="email"
                     value={personalEmail}
                     onChange={(e) => setPersonalEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., user@example.com"
                   />
                 </div>
 
                 {/* IP Address */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.47s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     IP Address
                   </label>
                   <input
                     type="text"
                     value={ipAddress}
                     onChange={(e) => setIpAddress(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., 192.168.1.1"
                   />
                 </div>
 
                 {/* Address */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.49s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Address
                   </label>
                   <input
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., 123 Main St, City, State"
                   />
                 </div>
 
                 {/* Phone Number */}
-                <div>
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.49s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Phone Number
                   </label>
                   <input
                     type="text"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="e.g., +1-555-0123"
                   />
                 </div>
@@ -794,32 +842,35 @@ export default function UppostPanel() {
             </div>
 
             {/* NSFW Checkbox */}
-            <div className="relative overflow-hidden">
-              <div className="relative flex items-center gap-3 bg-red-900/15 border-2 border-red-600/40 hover:border-red-600/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-red-600/10">
+            <div
+              className="relative overflow-hidden animate-slideInLeft"
+              style={{ animationDelay: "0.53s" }}
+            >
+              <div className="relative flex items-start sm:items-center gap-3 bg-red-900/15 border-2 border-red-600/40 hover:border-red-600/60 rounded-lg sm:rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:shadow-red-600/10">
                 <input
                   type="checkbox"
                   id="nsfw-checkbox"
                   checked={nsfw}
                   onChange={(e) => setNsfw(e.target.checked)}
-                  className="w-5 h-5 accent-red-600 rounded cursor-pointer flex-shrink-0"
+                  className="w-4 h-4 sm:w-5 sm:h-5 accent-red-600 rounded cursor-pointer flex-shrink-0 mt-0.5 sm:mt-0"
                 />
                 <label
                   htmlFor="nsfw-checkbox"
                   className="flex-1 cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
                     <svg
-                      className="w-4 h-4 text-red-400 flex-shrink-0"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400 flex-shrink-0"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                     </svg>
-                    <p className="text-sm font-bold text-red-400">
+                    <p className="text-xs sm:text-sm font-bold text-red-400">
                       Mark as NSFW Content
                     </p>
                   </div>
-                  <p className="text-xs text-red-300/80 ml-6">
+                  <p className="text-xs text-red-300/80 ml-5.5 sm:ml-6">
                     This content is Not Safe For Work and requires age
                     verification
                   </p>
@@ -828,32 +879,35 @@ export default function UppostPanel() {
             </div>
 
             {/* Trend Checkbox */}
-            <div className="relative overflow-hidden">
-              <div className="relative flex items-center gap-3 bg-amber-900/15 border-2 border-amber-600/40 hover:border-amber-600/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-amber-600/10">
+            <div
+              className="relative overflow-hidden animate-slideInRight"
+              style={{ animationDelay: "0.53s" }}
+            >
+              <div className="relative flex items-start sm:items-center gap-3 bg-amber-900/15 border-2 border-amber-600/40 hover:border-amber-600/60 rounded-lg sm:rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:shadow-amber-600/10">
                 <input
                   type="checkbox"
                   id="trend-checkbox"
                   checked={isTrend}
                   onChange={(e) => setIsTrend(e.target.checked)}
-                  className="w-5 h-5 accent-amber-600 rounded cursor-pointer flex-shrink-0"
+                  className="w-4 h-4 sm:w-5 sm:h-5 accent-amber-600 rounded cursor-pointer flex-shrink-0 mt-0.5 sm:mt-0"
                 />
                 <label
                   htmlFor="trend-checkbox"
                   className="flex-1 cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
                     <svg
-                      className="w-4 h-4 text-amber-400 flex-shrink-0"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 flex-shrink-0"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
-                    <p className="text-sm font-bold text-amber-400">
+                    <p className="text-xs sm:text-sm font-bold text-amber-400">
                       Mark as Trending Post
                     </p>
                   </div>
-                  <p className="text-xs text-amber-300/80 ml-6">
+                  <p className="text-xs text-amber-300/80 ml-5.5 sm:ml-6">
                     Posts marked as trending will appear first with a special
                     golden gradient
                   </p>
@@ -861,19 +915,19 @@ export default function UppostPanel() {
               </div>
 
               {isTrend && (
-                <div className="mt-4 animate-fadeIn">
-                  <label className="block text-sm font-bold mb-3 text-foreground">
+                <div className="mt-3 sm:mt-4 animate-fadeIn">
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                     Trend Rank Number
                   </label>
                   <input
                     type="number"
                     value={trendRank}
                     onChange={(e) => setTrendRank(e.target.value)}
-                    className="w-full px-4 py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                     placeholder="Enter rank number (1 appears first, 2 second, etc.)"
                     min="1"
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-muted-foreground mt-1.5 sm:mt-2">
                     Lower numbers appear first. E.g., rank 1 appears before rank
                     2
                   </p>
@@ -882,11 +936,14 @@ export default function UppostPanel() {
             </div>
 
             {/* Media Upload */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInUp"
+              style={{ animationDelay: "0.51s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Media Files <span className="text-destructive">*</span>
               </label>
-              <div className="border-2 border-dashed border-border/70 rounded-2xl p-10 text-center cursor-pointer hover:border-accent/70 hover:bg-accent/10 bg-background/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
+              <div className="border-2 border-dashed border-border/70 rounded-lg sm:rounded-2xl p-6 sm:p-10 text-center cursor-pointer hover:border-accent/70 hover:bg-accent/10 bg-background/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
                 <input
                   type="file"
                   onChange={handleMediaChange}
@@ -897,9 +954,9 @@ export default function UppostPanel() {
                 />
                 <label htmlFor="media-upload" className="cursor-pointer block">
                   {mediaFiles.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <svg
-                        className="w-6 h-6 mx-auto text-accent"
+                        className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-accent"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -907,7 +964,7 @@ export default function UppostPanel() {
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      <p className="text-sm font-bold text-accent">
+                      <p className="text-xs sm:text-sm font-bold text-accent">
                         {mediaFiles.length} file
                         {mediaFiles.length !== 1 ? "s" : ""} selected
                       </p>
@@ -916,9 +973,9 @@ export default function UppostPanel() {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <UploadIcon className="w-10 h-10 mx-auto text-muted-foreground" />
-                      <p className="text-sm font-bold text-foreground">
+                    <div className="space-y-2 sm:space-y-3">
+                      <UploadIcon className="w-8 h-8 sm:w-10 sm:h-10 mx-auto text-muted-foreground" />
+                      <p className="text-xs sm:text-sm font-bold text-foreground">
                         Click to upload media files
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -931,34 +988,38 @@ export default function UppostPanel() {
               </div>
 
               {mediaPreviews.length > 0 && (
-                <div className="mt-6">
-                  <div className="mb-4">
-                    <p className="text-sm font-semibold text-foreground mb-3">
+                <div className="mt-4 sm:mt-6">
+                  <div className="mb-3 sm:mb-4">
+                    <p className="text-xs sm:text-sm font-semibold text-foreground mb-2 sm:mb-3">
                       Uploaded Media ({mediaPreviews.length})
                     </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                       {mediaPreviews.map((media, idx) => (
-                        <div key={idx} className="relative group">
+                        <div
+                          key={idx}
+                          className="relative group animate-scaleUpFadeIn"
+                          style={{ animationDelay: `${idx * 0.05}s` }}
+                        >
                           {media.type.startsWith("image/") ? (
                             <img
                               src={media.preview}
                               alt={`Preview ${idx}`}
-                              className="w-full aspect-square rounded-lg border border-border object-cover"
+                              className="w-full aspect-square rounded-lg border border-border object-cover hover:border-accent/60 transition-colors"
                             />
                           ) : (
                             <video
                               src={media.preview}
-                              className="w-full aspect-square rounded-lg border border-border object-cover bg-muted"
+                              className="w-full aspect-square rounded-lg border border-border object-cover bg-muted hover:border-accent/60 transition-colors"
                             />
                           )}
                           <button
                             type="button"
                             onClick={() => removeMediaFile(idx)}
-                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-3 h-3 sm:w-4 sm:h-4" />
                           </button>
-                          <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                          <div className="absolute bottom-0.5 left-0.5 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded">
                             {idx + 1}
                           </div>
                         </div>
@@ -998,9 +1059,9 @@ export default function UppostPanel() {
             <button
               type="submit"
               disabled={uploading}
-              className="w-full px-4 py-4 bg-accent text-accent-foreground font-bold rounded-xl hover:bg-accent/90 hover:shadow-2xl hover:shadow-accent/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 sm:py-4 bg-accent text-accent-foreground font-bold text-sm sm:text-base rounded-lg sm:rounded-xl hover:bg-accent/90 hover:shadow-2xl hover:shadow-accent/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2 animate-popIn"
             >
-              <UploadIcon className="w-5 h-5" />
+              <UploadIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               {uploading ? "Uploading..." : "Upload Post"}
             </button>
           </form>
