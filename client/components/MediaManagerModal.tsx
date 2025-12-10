@@ -7,14 +7,12 @@ interface MediaManagerModalProps {
   post: Post;
   onClose: () => void;
   onUpdate: (post: Post) => void;
-  getIdToken: () => Promise<string | null>;
 }
 
 export default function MediaManagerModal({
   post,
   onClose,
   onUpdate,
-  getIdToken,
 }: MediaManagerModalProps) {
   const [deletingFileName, setDeletingFileName] = useState<string | null>(null);
   const [isDeletingFile, setIsDeletingFile] = useState(false);
