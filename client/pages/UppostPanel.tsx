@@ -202,16 +202,6 @@ export default function UppostPanel() {
         throw new Error("User is not authenticated");
       }
 
-      // Ensure server session is active
-      // This is a safety check - normally the session is created during login
-      try {
-        const idToken = await user.getIdToken();
-        await createServerSession(idToken);
-      } catch (sessionError) {
-        console.warn("Session refresh failed:", sessionError);
-        // Continue anyway - session might still be valid via cookies
-      }
-
       setUploadMessage("Uploading files to server...");
 
       // Create FormData for multipart upload to /api/upload
