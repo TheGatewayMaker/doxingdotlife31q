@@ -279,7 +279,9 @@ export default function EditPostModal({
                   >
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                   </svg>
-                  <p className="text-sm font-bold text-[#FF0000]">Mark as NSFW</p>
+                  <p className="text-sm font-bold text-[#FF0000]">
+                    Mark as NSFW
+                  </p>
                 </div>
                 <p className="text-xs text-[#FF0000]/80">
                   This content is Not Safe For Work and requires age
