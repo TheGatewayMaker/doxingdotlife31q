@@ -235,7 +235,7 @@ export default function Index() {
                         )}
                       </div>
                       <p className="text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 text-[#d0d0d0] font-semibold flex-1 leading-relaxed">
-                        {post.description.replace(/\*\*/g, "")}
+                        {post.description.replace(/\*\*|[*]/g, "")}
                       </p>
                       <div className="flex flex-wrap gap-2 opacity-100 group-hover:opacity-100 transition-opacity">
                         {post.country && (
