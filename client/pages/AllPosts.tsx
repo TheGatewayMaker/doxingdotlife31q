@@ -223,7 +223,7 @@ export default function AllPosts() {
                         {post.nsfw && (
                           <>
                             <div className="absolute top-0 right-0 w-1/5 h-1/5 bg-gradient-to-bl from-black/40 to-transparent pointer-events-none blur-xl" />
-                            <span className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#FF1744] text-white font-black text-xs sm:text-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-md shadow-black/40 backdrop-blur-sm z-10 tracking-tight">
+                            <span className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#FF0000] text-white font-black text-xs sm:text-sm px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md z-10">
                               18+
                             </span>
                           </>
