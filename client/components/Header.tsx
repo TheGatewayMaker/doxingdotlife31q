@@ -170,90 +170,100 @@ export default function Header() {
           </div>
         </button>
 
-        {/* Mobile Sidebar Navigation */}
+        {/* Right-to-Left Sidebar Navigation */}
         {isSidebarOpen && (
           <>
-            {/* Overlay */}
+            {/* Blur Overlay */}
             <div
-              className="fixed inset-0 bg-black/60 lg:hidden animate-fadeIn"
+              className={`fixed inset-0 bg-black/40 backdrop-blur-sm lg:hidden ${
+                isClosing ? "animate-overlayBlurOut" : "animate-overlayBlur"
+              }`}
               onClick={closeSidebar}
               role="presentation"
               aria-hidden="true"
               style={{ zIndex: 40 }}
             />
 
-            {/* Sidebar */}
+            {/* Sidebar from Right */}
             <div
               id="mobile-menu"
-              className="fixed top-0 left-0 right-0 w-full max-h-screen bg-[#000000] lg:hidden shadow-2xl flex flex-col overflow-hidden"
+              className={`fixed top-0 right-0 h-screen w-80 max-w-[85vw] bg-[#000000] lg:hidden shadow-2xl flex flex-col overflow-hidden border-l border-[#666666] ${
+                isClosing
+                  ? "animate-slideOutToRight"
+                  : "animate-slideInFromRight"
+              }`}
               style={{
                 zIndex: 50,
-                animation: "slideInDown 0.3s ease-out forwards",
               }}
               role="navigation"
               aria-label="Mobile navigation"
             >
               {/* Header with close button */}
-              <div className="h-16 sm:h-20 border-b border-[#666666] flex items-center justify-between px-4 sm:px-6 flex-shrink-0">
+              <div className="h-16 sm:h-20 border-b border-[#666666] flex items-center justify-between px-4 sm:px-6 flex-shrink-0 bg-gradient-to-r from-[#0a0a0a] to-transparent">
                 <h2 className="text-lg sm:text-xl font-bold text-white">
-                  Navigation
+                  Menu
                 </h2>
                 <button
                   onClick={closeSidebar}
                   aria-label="Close navigation menu"
-                  className="p-2 rounded-lg hover:bg-[#666666]/40 transition-colors touch-manipulation"
+                  className="p-2 rounded-lg hover:bg-[#666666]/40 transition-all duration-200 group hover:shadow-lg hover:shadow-[#0088CC]/20"
                 >
-                  <X className="w-6 h-6 text-white" />
+                  <ChevronRight className="w-6 h-6 text-white group-hover:text-[#0088CC] group-hover:translate-x-1 transition-all" />
                 </button>
               </div>
 
               {/* Scrollable menu content */}
-              <nav className="flex-1 overflow-y-auto px-2 sm:px-4 py-4 sm:py-6 space-y-2">
+              <nav className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 space-y-2">
                 <Link
                   to="/"
                   onClick={closeSidebar}
-                  className="flex items-center gap-3 w-full px-3 sm:px-4 py-3 sm:py-4 text-[#979797] font-semibold hover:bg-[#666666]/40 hover:text-white rounded-lg transition-all duration-200 active:bg-[#666666]/60 text-base sm:text-lg touch-target"
+                  className="flex items-center gap-4 w-full px-4 py-3 sm:py-4 text-[#979797] font-semibold hover:bg-gradient-to-r hover:from-[#0088CC]/20 hover:to-transparent hover:text-white rounded-lg transition-all duration-200 active:bg-[#0088CC]/40 text-base sm:text-lg touch-target hover:translate-x-2 group"
                 >
-                  <HomeIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                  <span>Home</span>
+                  <HomeIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="flex-1">Home</span>
+                  <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
                 <Link
                   to="/all-posts"
                   onClick={closeSidebar}
-                  className="flex items-center gap-3 w-full px-3 sm:px-4 py-3 sm:py-4 text-[#979797] font-semibold hover:bg-[#666666]/40 hover:text-white rounded-lg transition-all duration-200 active:bg-[#666666]/60 text-base sm:text-lg touch-target"
+                  className="flex items-center gap-4 w-full px-4 py-3 sm:py-4 text-[#979797] font-semibold hover:bg-gradient-to-r hover:from-[#0088CC]/20 hover:to-transparent hover:text-white rounded-lg transition-all duration-200 active:bg-[#0088CC]/40 text-base sm:text-lg touch-target hover:translate-x-2 group"
                 >
-                  <span className="text-lg sm:text-2xl">📋</span>
-                  <span>All Posts</span>
+                  <span className="text-lg sm:text-2xl flex-shrink-0">📋</span>
+                  <span className="flex-1">All Posts</span>
+                  <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
                 <Link
                   to="/dox-anyone"
                   onClick={closeSidebar}
-                  className="flex items-center gap-3 w-full px-3 sm:px-4 py-3 sm:py-4 text-white font-semibold hover:bg-[#0077BB] rounded-lg transition-all duration-200 bg-[#0088CC] active:bg-[#0066AA] text-base sm:text-lg touch-target"
+                  className="flex items-center gap-4 w-full px-4 py-3 sm:py-4 text-white font-semibold bg-gradient-to-r from-[#0088CC] to-[#0066AA] hover:from-[#0099DD] hover:to-[#0077BB] rounded-lg transition-all duration-200 active:shadow-inner shadow-lg shadow-[#0088CC]/40 text-base sm:text-lg touch-target hover:translate-x-1 group"
                 >
-                  <SearchAltIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                  <span>Dox Now</span>
+                  <SearchAltIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="flex-1">Dox Now</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 {isAuthenticated && (
                   <>
-                    <div className="my-2 sm:my-4 border-t border-[#666666]" />
+                    <div className="my-4 border-t border-[#666666]" />
                     {location.pathname !== "/uppostpanel" && (
                       <Link
                         to="/uppostpanel"
                         onClick={closeSidebar}
-                        className="flex items-center gap-3 w-full px-3 sm:px-4 py-3 sm:py-4 bg-purple-600 text-white font-semibold hover:bg-purple-700 rounded-lg transition-all duration-200 active:bg-purple-800 text-base sm:text-lg touch-target"
+                        className="flex items-center gap-4 w-full px-4 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 active:shadow-inner shadow-lg shadow-purple-600/40 text-base sm:text-lg touch-target hover:translate-x-1 group"
                       >
-                        <UploadIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                        <span>Upload Post</span>
+                        <UploadIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="flex-1">Upload Post</span>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     )}
                     {location.pathname !== "/admin-panel" && (
                       <Link
                         to="/admin-panel"
                         onClick={closeSidebar}
-                        className="flex items-center gap-3 w-full px-3 sm:px-4 py-3 sm:py-4 bg-amber-600 text-white font-semibold hover:bg-amber-700 rounded-lg transition-all duration-200 active:bg-amber-800 text-base sm:text-lg touch-target"
+                        className="flex items-center gap-4 w-full px-4 py-3 sm:py-4 bg-gradient-to-r from-amber-600 to-amber-700 text-white font-semibold hover:from-amber-500 hover:to-amber-600 rounded-lg transition-all duration-200 active:shadow-inner shadow-lg shadow-amber-600/40 text-base sm:text-lg touch-target hover:translate-x-1 group"
                       >
-                        <SettingsIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                        <span>Admin Panel</span>
+                        <SettingsIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="flex-1">Admin Panel</span>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     )}
                   </>
@@ -262,12 +272,12 @@ export default function Header() {
 
               {/* Footer section with logout button */}
               {isAuthenticated && (
-                <div className="p-3 sm:p-4 border-t border-[#666666] bg-[#0a0a0a] flex-shrink-0">
+                <div className="p-4 sm:p-5 border-t border-[#666666] bg-gradient-to-t from-[#0a0a0a] to-transparent flex-shrink-0">
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-3 sm:py-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-red-600/40 active:bg-red-800 text-base sm:text-lg touch-target"
+                    className="w-full flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-200 shadow-lg hover:shadow-lg hover:shadow-red-600/40 active:shadow-inner text-base sm:text-lg touch-target group"
                   >
-                    <LogOut className="w-5 h-5" />
+                    <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     <span>Logout</span>
                   </button>
                 </div>
