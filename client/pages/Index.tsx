@@ -245,10 +245,10 @@ export default function Index() {
                       <p className="text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 text-[#d0d0d0] font-semibold flex-1 leading-relaxed">
                         {post.description.replace(/\*\*|[*]/g, "")}
                       </p>
-                      <div className="flex flex-wrap gap-2 opacity-100 group-hover:opacity-100 transition-opacity">
+                      <div className="flex flex-wrap gap-1.5 opacity-100 group-hover:opacity-100 transition-opacity">
                         {post.country && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-[#2a2a2a] text-[#e0e0e0] border border-[#444444] flex-shrink-0 hover:border-[#0088CC] transition-all">
-                            <GlobeIcon className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-[#d0d0d0] border border-white/20 flex-shrink-0 hover:bg-white/20 hover:border-[#0088CC] transition-all">
+                            <GlobeIcon className="w-3 h-3" />
                             <span className="hidden sm:inline">
                               {post.country}
                             </span>
@@ -258,8 +258,8 @@ export default function Index() {
                           </span>
                         )}
                         {post.city && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-[#2a2a2a] text-[#e0e0e0] border border-[#444444] flex-shrink-0 hover:border-[#0088CC] transition-all">
-                            <MapPinIcon className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-[#d0d0d0] border border-white/20 flex-shrink-0 hover:bg-white/20 hover:border-[#0088CC] transition-all">
+                            <MapPinIcon className="w-3 h-3" />
                             <span className="hidden sm:inline">
                               {post.city}
                             </span>
@@ -269,8 +269,8 @@ export default function Index() {
                           </span>
                         )}
                         {post.server && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-[#2a2a2a] text-[#e0e0e0] border border-[#444444] flex-shrink-0 hover:border-[#0088CC] transition-all">
-                            <ServerIcon className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-[#d0d0d0] border border-white/20 flex-shrink-0 hover:bg-white/20 hover:border-[#0088CC] transition-all">
+                            <DiscordIcon className="w-3 h-3" />
                             <span className="hidden sm:inline">
                               {post.server}
                             </span>
