@@ -507,4 +507,44 @@ html {
     animation: staggerFadeIn 0.5s ease-out forwards;
     opacity: 0;
   }
+
+  /* Sidebar animations */
+  .animate-slideInFromRight {
+    animation: slideInFromRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-slideOutToRight {
+    animation: slideOutToRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Overlay animations */
+  .animate-overlayBlur {
+    animation: overlayBlur 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-overlayBlurOut {
+    animation: overlayBlurOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Modern spinner animations */
+  .animate-modernSpinning {
+    animation: modernSpinning 3s linear infinite;
+  }
+
+  .animate-modernPulse {
+    animation: modernPulse 2s ease-in-out infinite;
+  }
+
+  .animate-gradientShift {
+    animation: gradientShift 3s ease infinite;
+  }
+
+  /* Snowfall animation */
+  .animate-snowfall {
+    animation: snowfall linear forwards;
+  }
+
+  .animate-snowswing {
+    animation: snowswing 3s ease-in-out infinite;
+  }
 }
