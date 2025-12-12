@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SearchBar from "@/components/SearchBar";
 import { Post, PostsResponse } from "@shared/api";
-import { GlobeIcon, MapPinIcon, ServerIcon } from "@/components/Icons";
+import { GlobeIcon, MapPinIcon, DiscordIcon } from "@/components/Icons";
 import { Flame } from "lucide-react";
 
 export default function Index() {
