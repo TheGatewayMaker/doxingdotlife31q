@@ -175,7 +175,7 @@ export default function Header() {
           <>
             {/* Blur Overlay */}
             <div
-              className={`fixed inset-0 bg-black/40 backdrop-blur-sm lg:hidden ${
+              className={`fixed inset-0 bg-black/50 backdrop-blur-md lg:hidden transition-all duration-300 ease-out ${
                 isClosing ? "animate-overlayBlurOut" : "animate-overlayBlur"
               }`}
               onClick={closeSidebar}
