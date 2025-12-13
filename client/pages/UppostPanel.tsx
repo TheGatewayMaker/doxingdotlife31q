@@ -328,10 +328,10 @@ export default function UppostPanel() {
 
               {/* Heading */}
               <h1 className="text-3xl sm:text-4xl font-black mb-3 text-white tracking-tight">
-                Upload Portal
+                Author Portal
               </h1>
               <p className="text-[#979797] mb-8 text-base font-medium leading-relaxed">
-                Secure admin authentication required to create and manage posts
+                Verify your credentials to create and manage content
               </p>
 
               {/* Content Section */}
