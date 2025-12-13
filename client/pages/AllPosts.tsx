@@ -223,9 +223,14 @@ export default function AllPosts() {
                         {post.nsfw && (
                           <>
                             <div className="absolute top-0 right-0 w-1/5 h-1/5 bg-gradient-to-bl from-black/40 to-transparent pointer-events-none blur-xl" />
-                            <span className="absolute top-1 sm:top-3 right-1 sm:right-3 bg-[#FF0000] text-white font-black text-xs sm:text-sm px-2 sm:px-2.5 py-0.5 sm:py-1.5 rounded-md z-10">
-                              18+
-                            </span>
+                            <div className="absolute top-1 sm:top-3 right-1 sm:right-3 flex flex-col gap-1 z-10">
+                              <span className="bg-[#FF0000] text-white font-black text-xs sm:text-sm px-2 sm:px-2.5 py-0.5 sm:py-1.5 rounded-md drop-shadow-lg">
+                                NSFW
+                              </span>
+                              <span className="bg-[#FF0000] text-white font-black text-xs sm:text-sm px-2 sm:px-2.5 py-0.5 sm:py-1.5 rounded-md drop-shadow-lg">
+                                18+
+                              </span>
+                            </div>
                           </>
                         )}
                       </div>
@@ -236,8 +241,8 @@ export default function AllPosts() {
                           {post.title}
                         </h3>
                       </div>
-                      <p className="hidden sm:block text-xs sm:text-sm line-clamp-1 sm:line-clamp-2 mb-1 sm:mb-2 text-[#d0d0d0] font-semibold flex-1 leading-relaxed">
-                        {post.description.replace(/\*\*|[*]/g, "")}
+                      <p className="text-xs sm:text-sm font-bold text-white cursor-pointer hover:text-[#0088CC] transition-colors mb-2 sm:mb-3">
+                        Click to see Full Post
                       </p>
                       <div className="hidden sm:flex flex-wrap gap-1 opacity-100 group-hover:opacity-100 transition-opacity">
                         {post.country && (
