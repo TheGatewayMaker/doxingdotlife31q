@@ -32,7 +32,11 @@ export default function UppostPanel() {
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [thumbnailDragActive, setThumbnailDragActive] = useState(false);
+  const [mediaDragActive, setMediaDragActive] = useState(false);
   const uploadAbortControllerRef = useRef<AbortController | null>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
 
   // Personal Info Fields (Optional)
   const [discordUsername, setDiscordUsername] = useState("");
@@ -85,25 +89,73 @@ export default function UppostPanel() {
     }
   };
 
+  const handleThumbnailDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setThumbnailDragActive(true);
+    } else if (e.type === "dragleave") {
+      setThumbnailDragActive(false);
+    }
+  };
+
+  const handleThumbnailDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setThumbnailDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      setThumbnail(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newFiles = Array.from(files);
-      newFiles.forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setMediaPreviews((prev) => [
-            ...prev,
-            {
-              file,
-              preview: reader.result as string,
-              type: file.type,
-            },
-          ]);
-        };
-        reader.readAsDataURL(file);
-      });
-      setMediaFiles((prev) => [...prev, ...newFiles]);
+      processMediaFiles(Array.from(files));
+    }
+  };
+
+  const processMediaFiles = (newFiles: File[]) => {
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setMediaPreviews((prev) => [
+          ...prev,
+          {
+            file,
+            preview: reader.result as string,
+            type: file.type,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+    setMediaFiles((prev) => [...prev, ...newFiles]);
+  };
+
+  const handleMediaDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setMediaDragActive(true);
+    } else if (e.type === "dragleave") {
+      setMediaDragActive(false);
+    }
+  };
+
+  const handleMediaDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMediaDragActive(false);
+    const files = e.dataTransfer.files;
+    if (files) {
+      processMediaFiles(Array.from(files));
     }
   };
 
