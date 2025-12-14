@@ -76,6 +76,7 @@ export const handleWatermarkVideo: RequestHandler = async (req, res) => {
       })
       .on("error", (err) => {
         console.error("FFmpeg error:", err);
+        console.error("Attempted to process video URL:", absoluteUrl);
         if (!res.headersSent) {
           res.status(500).json({
             error: "Video processing failed",
