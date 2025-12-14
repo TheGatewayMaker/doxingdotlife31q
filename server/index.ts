@@ -20,6 +20,7 @@ import {
   authMiddleware,
   optionalAuthMiddleware,
 } from "./routes/auth";
+import { handleWatermarkVideo } from "./routes/watermark-video";
 import { validateR2Configuration } from "./utils/r2-storage";
 
 // VPS configuration with proper size handling
