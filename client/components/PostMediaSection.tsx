@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Download, Play } from "lucide-react";
 import { addWatermarkToImage, addWatermarkToVideo } from "@/lib/watermark";
 import { toast } from "sonner";
@@ -16,6 +16,13 @@ interface PostMediaSectionProps {
   thumbnailUrl?: string;
 }
 
+interface MediaItem extends MediaFile {
+  index: number;
+  isVideo: boolean;
+  isPhoto: boolean;
+  duration?: number;
+}
+
 export default function PostMediaSection({
   mediaFiles,
   postTitle,
@@ -28,11 +35,31 @@ export default function PostMediaSection({
   const photos = filteredMediaFiles.filter((f) => f.type.startsWith("image/"));
   const videos = filteredMediaFiles.filter((f) => f.type.startsWith("video/"));
 
-  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+  const [videoDurations, setVideoDurations] = useState<{
+    [key: string]: number;
+  }>({});
+  const videoRefsForDuration = useRef<{
+    [key: string]: HTMLVideoElement | null;
+  }>({});
 
   if (photos.length === 0 && videos.length === 0) {
     return null;
   }
+
+  const formatDuration = (seconds: number): string => {
+    if (!seconds || isNaN(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const handleVideoDurationLoaded = (url: string, duration: number) => {
+    setVideoDurations((prev) => ({
+      ...prev,
+      [url]: duration,
+    }));
+  };
 
   const handleDownload = async (mediaFile: MediaFile) => {
     try {
@@ -56,163 +83,265 @@ export default function PostMediaSection({
     }
   };
 
+  // Combine all media files
+  const allMedia: MediaItem[] = [
+    ...photos.map((photo, idx) => ({
+      ...photo,
+      index: idx,
+      isVideo: false,
+      isPhoto: true,
+    })),
+    ...videos.map((video, idx) => ({
+      ...video,
+      index: idx,
+      isVideo: true,
+      isPhoto: false,
+      duration: videoDurations[video.url],
+    })),
+  ];
+
+  const selectedMedia = allMedia[selectedMediaIndex];
+  const isSelectedVideo = selectedMedia?.isVideo;
+  const isSelectedPhoto = selectedMedia?.isPhoto;
+
   return (
-    <div className="space-y-12">
-      {/* Photos Section */}
-      {photos.length > 0 && (
-        <div>
-          <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-white">
-            <svg
-              className="w-6 h-6 text-[#0088CC]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <circle cx="8.5" cy="8.5" r="1.5"></circle>
-              <polyline points="21 15 16 10 5 21"></polyline>
-            </svg>
-            Photos Gallery ({photos.length})
-          </h3>
+    <div className="space-y-8">
+      {/* Media Header */}
+      <div>
+        <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-white">
+          <svg
+            className="w-6 h-6 text-[#0088CC]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          Media ({allMedia.length})
+        </h3>
 
-          {/* Responsive Grid Layout */}
-          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
-            {photos.map((photo, idx) => (
-              <PhotoCard
-                key={`${photo.name}-${idx}`}
-                url={photo.url}
-                name={photo.name}
-                index={idx}
-                total={photos.length}
-                onDownload={() => handleDownload(photo)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+        {/* Media Thumbnails Grid */}
+        {allMedia.length > 1 && (
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8">
+            {allMedia.map((media, idx) => {
+              const isSelected = selectedMediaIndex === idx;
 
-      {/* Videos Section */}
-      {videos.length > 0 && (
-        <div className="border-t border-[#666666] pt-12">
-          <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-white">
-            <svg
-              className="w-6 h-6 text-[#0088CC]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <polygon points="23 7 16 12 23 17 23 7"></polygon>
-              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-            </svg>
-            Videos ({videos.length})
-          </h3>
-
-          {/* Video Thumbnails Grid */}
-          {videos.length > 1 && (
-            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8">
-              {videos.map((video, idx) => (
-                <button
-                  key={`${video.name}-${idx}`}
-                  onClick={() => setSelectedVideoIndex(idx)}
-                  className={`relative group rounded-lg overflow-hidden border-2 transition-all aspect-square ${
-                    selectedVideoIndex === idx
-                      ? "border-[#0088CC] ring-2 ring-[#0088CC] ring-offset-2 ring-offset-[#000000]"
-                      : "border-[#666666] hover:border-[#0088CC]/70"
-                  }`}
-                >
-                  <div className="w-full h-full bg-black flex items-center justify-center relative overflow-hidden">
-                    <video
+              if (media.isPhoto) {
+                return (
+                  <button
+                    key={`${media.name}-${idx}`}
+                    onClick={() => setSelectedMediaIndex(idx)}
+                    className={`relative group rounded-lg overflow-hidden border-2 transition-all aspect-square ${
+                      isSelected
+                        ? "border-[#0088CC] ring-2 ring-[#0088CC] ring-offset-2 ring-offset-[#000000]"
+                        : "border-[#666666] hover:border-[#0088CC]/70"
+                    }`}
+                  >
+                    <img
+                      src={media.url}
+                      alt={media.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      loading="lazy"
                       crossOrigin="anonymous"
-                      preload="metadata"
-                      playsInline
-                    >
-                      <source src={video.url} type={video.type} />
-                    </video>
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center pointer-events-none">
-                      <Play className="w-6 h-6 text-white fill-white" />
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 px-2 py-1 rounded text-white text-xs font-medium">
+                        {idx + 1}
+                      </div>
                     </div>
+                  </button>
+                );
+              } else {
+                return (
+                  <button
+                    key={`${media.name}-${idx}`}
+                    onClick={() => setSelectedMediaIndex(idx)}
+                    className={`relative group rounded-lg overflow-hidden border-2 transition-all aspect-square ${
+                      isSelected
+                        ? "border-[#0088CC] ring-2 ring-[#0088CC] ring-offset-2 ring-offset-[#000000]"
+                        : "border-[#666666] hover:border-[#0088CC]/70"
+                    }`}
+                  >
+                    <div className="w-full h-full bg-black flex items-center justify-center relative overflow-hidden">
+                      <video
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        crossOrigin="anonymous"
+                        preload="metadata"
+                        playsInline
+                      >
+                        <source src={media.url} type={media.type} />
+                      </video>
+                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center pointer-events-none">
+                        <Play className="w-6 h-6 text-white fill-white" />
+                      </div>
+                      {media.duration && (
+                        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-medium px-2 py-1 rounded pointer-events-none">
+                          {formatDuration(media.duration)}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              }
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Media Display Area */}
+      {selectedMedia && (
+        <>
+          {isSelectedPhoto && (
+            <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-[#666666]">
+              <div
+                className="bg-black flex items-center justify-center w-full"
+                style={{ aspectRatio: "16/9", minHeight: "300px" }}
+              >
+                <img
+                  src={selectedMedia.url}
+                  alt={selectedMedia.name}
+                  className="w-full h-full object-contain"
+                  crossOrigin="anonymous"
+                />
+              </div>
+
+              {/* Photo Info and Actions */}
+              <div className="p-3 sm:p-4 md:p-6 space-y-3 border-t border-[#666666]">
+                <div className="flex items-start justify-between gap-2 sm:gap-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-semibold text-white truncate break-words line-clamp-2">
+                      {selectedMedia.name}
+                    </p>
+                    {allMedia.length > 1 && (
+                      <p className="text-xs text-[#979797] mt-1">
+                        {selectedMediaIndex + 1} / {allMedia.length}
+                      </p>
+                    )}
                   </div>
-                </button>
-              ))}
+                </div>
+
+                <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+                  {allMedia.length > 1 && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setSelectedMediaIndex((prev) =>
+                            prev === 0 ? allMedia.length - 1 : prev - 1,
+                          )
+                        }
+                        className="p-2 bg-[#1a1a1a] hover:bg-[#0088CC] hover:text-white text-[#979797] rounded transition-all text-sm font-medium border border-[#666666] hover:border-[#0088CC] touch-target"
+                        aria-label="Previous media"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setSelectedMediaIndex((prev) =>
+                            prev === allMedia.length - 1 ? 0 : prev + 1,
+                          )
+                        }
+                        className="p-2 bg-[#1a1a1a] hover:bg-[#0088CC] hover:text-white text-[#979797] rounded transition-all text-sm font-medium border border-[#666666] hover:border-[#0088CC] touch-target"
+                        aria-label="Next media"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => handleDownload(selectedMedia)}
+                    className="flex-1 px-2 sm:px-4 py-2 bg-[#0088CC] hover:bg-[#0077BB] text-white text-xs sm:text-sm font-medium rounded transition-all flex items-center justify-center gap-2 touch-target"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span className="hidden sm:inline">Download</span>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Video Player */}
-          <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-[#666666]">
-            <div
-              className="relative bg-black flex items-center justify-center w-full"
-              style={{ aspectRatio: "16/9", minHeight: "300px" }}
-            >
-              <video
-                controls
-                controlsList="nodownload"
-                preload="metadata"
-                className="w-full h-full object-contain"
-                crossOrigin="anonymous"
-                playsInline
+          {isSelectedVideo && (
+            <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-[#666666]">
+              <div
+                className="relative bg-black flex items-center justify-center w-full"
+                style={{ aspectRatio: "16/9", minHeight: "300px" }}
               >
-                <source
-                  src={videos[selectedVideoIndex].url}
-                  type={videos[selectedVideoIndex].type}
-                />
-                Your browser does not support the video tag.
-              </video>
-            </div>
+                <video
+                  key={`video-${selectedMediaIndex}`}
+                  controls
+                  controlsList="nodownload"
+                  preload="metadata"
+                  className="w-full h-full object-contain"
+                  crossOrigin="anonymous"
+                  playsInline
+                  onLoadedMetadata={(e) => {
+                    const video = e.currentTarget;
+                    handleVideoDurationLoaded(
+                      selectedMedia.url,
+                      video.duration,
+                    );
+                  }}
+                >
+                  <source src={selectedMedia.url} type={selectedMedia.type} />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
 
-            {/* Video Info and Actions */}
-            <div className="p-3 sm:p-4 md:p-6 space-y-3 border-t border-[#666666]">
-              <div className="flex items-start justify-between gap-2 sm:gap-4">
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs sm:text-sm font-semibold text-white truncate break-words line-clamp-2">
-                    {videos[selectedVideoIndex].name}
-                  </p>
-                  {videos.length > 1 && (
-                    <p className="text-xs text-[#979797] mt-1">
-                      {selectedVideoIndex + 1} / {videos.length}
+              {/* Video Info and Actions */}
+              <div className="p-3 sm:p-4 md:p-6 space-y-3 border-t border-[#666666]">
+                <div className="flex items-start justify-between gap-2 sm:gap-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-semibold text-white truncate break-words line-clamp-2">
+                      {selectedMedia.name}
                     </p>
+                    {allMedia.length > 1 && (
+                      <p className="text-xs text-[#979797] mt-1">
+                        {selectedMediaIndex + 1} / {allMedia.length}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+                  {allMedia.length > 1 && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setSelectedMediaIndex((prev) =>
+                            prev === 0 ? allMedia.length - 1 : prev - 1,
+                          )
+                        }
+                        className="p-2 bg-[#1a1a1a] hover:bg-[#0088CC] hover:text-white text-[#979797] rounded transition-all text-sm font-medium border border-[#666666] hover:border-[#0088CC] touch-target"
+                        aria-label="Previous media"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setSelectedMediaIndex((prev) =>
+                            prev === allMedia.length - 1 ? 0 : prev + 1,
+                          )
+                        }
+                        className="p-2 bg-[#1a1a1a] hover:bg-[#0088CC] hover:text-white text-[#979797] rounded transition-all text-sm font-medium border border-[#666666] hover:border-[#0088CC] touch-target"
+                        aria-label="Next media"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </>
                   )}
+                  <button
+                    onClick={() => handleDownload(selectedMedia)}
+                    className="flex-1 px-2 sm:px-4 py-2 bg-[#0088CC] hover:bg-[#0077BB] text-white text-xs sm:text-sm font-medium rounded transition-all flex items-center justify-center gap-2 touch-target"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span className="hidden sm:inline">Download</span>
+                  </button>
                 </div>
               </div>
-
-              <div className="flex gap-1.5 sm:gap-2 flex-wrap">
-                {videos.length > 1 && (
-                  <>
-                    <button
-                      onClick={() =>
-                        setSelectedVideoIndex((prev) =>
-                          prev === 0 ? videos.length - 1 : prev - 1,
-                        )
-                      }
-                      className="p-2 bg-[#1a1a1a] hover:bg-[#0088CC] hover:text-white text-[#979797] rounded transition-all text-sm font-medium border border-[#666666] hover:border-[#0088CC] touch-target"
-                      aria-label="Previous video"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() =>
-                        setSelectedVideoIndex((prev) =>
-                          prev === videos.length - 1 ? 0 : prev + 1,
-                        )
-                      }
-                      className="p-2 bg-[#1a1a1a] hover:bg-[#0088CC] hover:text-white text-[#979797] rounded transition-all text-sm font-medium border border-[#666666] hover:border-[#0088CC] touch-target"
-                      aria-label="Next video"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </>
-                )}
-                <button
-                  onClick={() => handleDownload(videos[selectedVideoIndex])}
-                  className="flex-1 px-2 sm:px-4 py-2 bg-[#0088CC] hover:bg-[#0077BB] text-white text-xs sm:text-sm font-medium rounded transition-all flex items-center justify-center gap-2 touch-target"
-                >
-                  <Download className="w-4 h-4" />
-                  <span className="hidden sm:inline">Download</span>
-                </button>
-              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );
