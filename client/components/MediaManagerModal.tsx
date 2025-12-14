@@ -7,14 +7,12 @@ interface MediaManagerModalProps {
   post: Post;
   onClose: () => void;
   onUpdate: (post: Post) => void;
-  authToken: string;
 }
 
 export default function MediaManagerModal({
   post,
   onClose,
   onUpdate,
-  authToken,
 }: MediaManagerModalProps) {
   const [deletingFileName, setDeletingFileName] = useState<string | null>(null);
   const [isDeletingFile, setIsDeletingFile] = useState(false);
@@ -63,18 +61,18 @@ export default function MediaManagerModal({
 
     try {
       setIsDeletingFile(true);
+
       const response = await fetch(
         `/api/posts/${post.id}/media/${encodeURIComponent(deletingFileName)}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+          credentials: "include",
         },
       );
 
       if (!response.ok) {
-        throw new Error("Failed to delete media file");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to delete media file");
       }
 
       const updatedFiles = mediaFiles.filter(
@@ -90,7 +88,9 @@ export default function MediaManagerModal({
       toast.success("Media file deleted successfully");
     } catch (error) {
       console.error("Error deleting media file:", error);
-      toast.error("Failed to delete media file");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete media file",
+      );
     } finally {
       setIsDeletingFile(false);
       setDeletingFileName(null);

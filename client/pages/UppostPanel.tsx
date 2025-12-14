@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { LogOut, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { UploadIcon, ImageIcon } from "@/components/Icons";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { validateUploadInputs } from "@/lib/r2-upload";
 
 export default function UppostPanel() {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ export default function UppostPanel() {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [server, setServer] = useState("");
+  const [nsfw, setNsfw] = useState(false);
+  const [isTrend, setIsTrend] = useState(false);
+  const [trendRank, setTrendRank] = useState("");
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
@@ -28,6 +32,21 @@ export default function UppostPanel() {
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [thumbnailDragActive, setThumbnailDragActive] = useState(false);
+  const [mediaDragActive, setMediaDragActive] = useState(false);
+  const uploadAbortControllerRef = useRef<AbortController | null>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
+
+  // Personal Info Fields (Optional)
+  const [discordUsername, setDiscordUsername] = useState("");
+  const [discordName, setDiscordName] = useState("");
+  const [realName, setRealName] = useState("");
+  const [age, setAge] = useState("");
+  const [personalEmail, setPersonalEmail] = useState("");
+  const [ipAddress, setIpAddress] = useState("");
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleLogin = async () => {
     setLoginError("");
@@ -70,25 +89,73 @@ export default function UppostPanel() {
     }
   };
 
+  const handleThumbnailDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setThumbnailDragActive(true);
+    } else if (e.type === "dragleave") {
+      setThumbnailDragActive(false);
+    }
+  };
+
+  const handleThumbnailDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setThumbnailDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      setThumbnail(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newFiles = Array.from(files);
-      newFiles.forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setMediaPreviews((prev) => [
-            ...prev,
-            {
-              file,
-              preview: reader.result as string,
-              type: file.type,
-            },
-          ]);
-        };
-        reader.readAsDataURL(file);
-      });
-      setMediaFiles((prev) => [...prev, ...newFiles]);
+      processMediaFiles(Array.from(files));
+    }
+  };
+
+  const processMediaFiles = (newFiles: File[]) => {
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setMediaPreviews((prev) => [
+          ...prev,
+          {
+            file,
+            preview: reader.result as string,
+            type: file.type,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+    setMediaFiles((prev) => [...prev, ...newFiles]);
+  };
+
+  const handleMediaDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setMediaDragActive(true);
+    } else if (e.type === "dragleave") {
+      setMediaDragActive(false);
+    }
+  };
+
+  const handleMediaDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMediaDragActive(false);
+    const files = e.dataTransfer.files;
+    if (files) {
+      processMediaFiles(Array.from(files));
     }
   };
 
@@ -103,12 +170,23 @@ export default function UppostPanel() {
     setCountry("");
     setCity("");
     setServer("");
+    setNsfw(false);
+    setIsTrend(false);
+    setTrendRank("");
     setThumbnail(null);
     setThumbnailPreview("");
     setMediaFiles([]);
     setMediaPreviews([]);
     setUploadMessage("");
     setUploadError("");
+    setDiscordUsername("");
+    setDiscordName("");
+    setRealName("");
+    setAge("");
+    setPersonalEmail("");
+    setIpAddress("");
+    setAddress("");
+    setPhoneNumber("");
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -123,40 +201,152 @@ export default function UppostPanel() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("country", country);
-    formData.append("city", city);
-    formData.append("server", server);
-    formData.append("thumbnail", thumbnail);
+    // Validate file sizes
+    const filesWithThumbnail = [thumbnail, ...mediaFiles];
+    const validation = validateUploadInputs(filesWithThumbnail);
+    if (!validation.valid) {
+      setUploadError(validation.error || "File validation failed");
+      return;
+    }
 
-    mediaFiles.forEach((file) => {
-      formData.append("media", file);
-    });
+    // Build complete description with optional personal info fields
+    let completeDescription = description;
+
+    // Add personal info section if any fields are filled
+    const personalInfoParts: string[] = [];
+
+    if (discordUsername) {
+      personalInfoParts.push(`**Discord Username:** ${discordUsername}`);
+    }
+    if (discordName) {
+      personalInfoParts.push(`**Discord Name:** ${discordName}`);
+    }
+    if (realName) {
+      personalInfoParts.push(`**Real Name:** ${realName}`);
+    }
+    if (age) {
+      personalInfoParts.push(`**Age:** ${age}`);
+    }
+    if (personalEmail) {
+      personalInfoParts.push(`**Email:** ${personalEmail}`);
+    }
+    if (ipAddress) {
+      personalInfoParts.push(`**IP Address:** ${ipAddress}`);
+    }
+    if (address) {
+      personalInfoParts.push(`**Address:** ${address}`);
+    }
+    if (phoneNumber) {
+      personalInfoParts.push(`**Phone Number:** ${phoneNumber}`);
+    }
+
+    // Append personal info to description if any fields are filled
+    if (personalInfoParts.length > 0) {
+      completeDescription = `${completeDescription}\n\n**Personal Information:**\n${personalInfoParts.join("\n")}`;
+    }
 
     setUploading(true);
 
     try {
-      const idToken = await user?.getIdToken();
-      if (!idToken) {
-        throw new Error("Authentication token not available");
+      // Verify user is authenticated
+      if (!user) {
+        throw new Error("User is not authenticated");
       }
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
+      setUploadMessage("Uploading files to server...");
+
+      // Create FormData for multipart upload to /api/upload
+      const formData = new FormData();
+
+      // Add metadata
+      formData.append("title", title);
+      formData.append("description", completeDescription);
+      formData.append("userEmail", email || "");
+      if (country) formData.append("country", country);
+      if (city) formData.append("city", city);
+      if (server) formData.append("server", server);
+      formData.append("nsfw", nsfw.toString());
+      if (isTrend) formData.append("isTrend", isTrend.toString());
+      if (isTrend && trendRank) formData.append("trendRank", trendRank);
+
+      // Add files
+      formData.append("thumbnail", thumbnail, thumbnail.name);
+      mediaFiles.forEach((file) => {
+        formData.append("media", file, file.name);
       });
 
-      if (!response.ok) {
-        throw new Error("Upload failed");
+      console.log(
+        `[Upload] Sending request with ${mediaFiles.length} media files and 1 thumbnail`,
+      );
+
+      // Create abort controller for request timeout handling
+      uploadAbortControllerRef.current = new AbortController();
+      const uploadTimeout = setTimeout(
+        () => {
+          uploadAbortControllerRef.current?.abort();
+          console.error("[Upload] Request timeout - aborting upload");
+        },
+        35 * 60 * 1000,
+      ); // 35 minutes (slightly more than server's 30 min timeout)
+
+      let uploadResponse;
+      try {
+        uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          // Do NOT set Content-Type header for FormData - browser will set it with correct boundary
+          // Do NOT set Authorization header - session cookie will be sent automatically
+          body: formData,
+          signal: uploadAbortControllerRef.current.signal,
+          credentials: "include", // Important: Include cookies in the request
+        });
+        clearTimeout(uploadTimeout);
+      } catch (fetchError) {
+        clearTimeout(uploadTimeout);
+        if (fetchError instanceof Error && fetchError.name === "AbortError") {
+          throw new Error(
+            "Upload timed out after 35 minutes. Please try again with smaller files.",
+          );
+        }
+        throw fetchError;
       }
 
-      const data = await response.json();
-      setUploadMessage("Post uploaded successfully!");
+      console.log(
+        `[Upload] Response status: ${uploadResponse.status} ${uploadResponse.statusText}`,
+      );
+
+      if (!uploadResponse.ok) {
+        let errorMsg = `HTTP ${uploadResponse.status}: ${uploadResponse.statusText}`;
+        try {
+          const errorData = await uploadResponse.json();
+          if (errorData.error) {
+            errorMsg = errorData.error;
+          }
+          if (errorData.details) {
+            errorMsg += ` - ${errorData.details}`;
+          }
+        } catch (parseError) {
+          console.error("Error parsing error response:", parseError);
+          // Keep the default HTTP error message if parsing fails
+        }
+
+        // Provide specific guidance based on status code
+        if (uploadResponse.status === 413) {
+          errorMsg +=
+            " (This might be due to large file sizes. Try reducing the number of files or their sizes.)";
+        } else if (uploadResponse.status === 403) {
+          errorMsg =
+            "Your email is not authorized to upload. Contact the administrator.";
+        } else if (uploadResponse.status === 500) {
+          errorMsg += " (Server error - the administrator has been notified.)";
+        }
+
+        throw new Error(errorMsg);
+      }
+
+      const uploadData = await uploadResponse.json();
+      setUploadMessage(
+        `Post uploaded successfully! (${uploadData.mediaCount || 0} media file(s))`,
+      );
       toast.success("Post uploaded successfully!");
       resetForm();
     } catch (error) {
@@ -174,64 +364,114 @@ export default function UppostPanel() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col animate-fadeIn">
+      <div className="min-h-screen bg-[#000000] text-foreground flex flex-col animate-fadeIn">
         <Header />
-        <div className="flex-1 flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-muted/20 to-background">
+        <div className="flex-1 flex items-center justify-center px-4 py-12 bg-[#000000]">
           <div
-            className="w-full max-w-md animate-fadeIn"
+            className="w-full max-w-sm animate-fadeIn"
             style={{ animationDelay: "0.1s" }}
           >
-            <div className="bg-card border border-border rounded-xl p-10 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-              <div className="mb-4 w-12 h-12 bg-gradient-to-br from-accent to-accent/80 rounded-lg flex items-center justify-center shadow-lg">
-                <UploadIcon className="w-6 h-6 text-accent-foreground" />
+            {/* Main Card */}
+            <div className="bg-[#1a1a1a] border border-[#333333] rounded-2xl p-8 sm:p-10 shadow-2xl hover:shadow-3xl transition-all duration-300">
+              {/* Icon */}
+              <div className="mb-6 w-16 h-16 bg-gradient-to-br from-[#0088CC] to-[#0066AA] rounded-2xl flex items-center justify-center shadow-lg">
+                <UploadIcon className="w-8 h-8 text-white" />
               </div>
-              <h1 className="text-4xl font-black mb-2 text-foreground">
-                Upload Portal
+
+              {/* Heading */}
+              <h1 className="text-3xl sm:text-4xl font-black mb-3 text-white tracking-tight">
+                Author Portal
               </h1>
-              <p className="text-muted-foreground mb-8 text-sm">
-                Secure admin authentication required to create and manage posts
+              <p className="text-[#979797] mb-8 text-base font-medium leading-relaxed">
+                Verify your credentials to create and manage content
               </p>
 
+              {/* Content Section */}
               <div className="space-y-5">
-                <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-900 font-medium mb-4">
-                    📧{" "}
-                    <strong>
-                      Only authorized Gmail accounts can access this admin panel
-                    </strong>
-                  </p>
-                  <p className="text-xs text-blue-800">
-                    Contact the administrator if you believe your email should
-                    be authorized.
-                  </p>
+                {/* Security Notice */}
+                <div className="relative overflow-hidden bg-[#0a3a5f] border border-[#0088CC]/30 rounded-xl p-5 backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0088CC]/10 to-transparent pointer-events-none" />
+                  <div className="relative space-y-2.5">
+                    <div className="flex items-start gap-3">
+                      <svg
+                        className="w-5 h-5 text-[#00B4FF] flex-shrink-0 mt-0.5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 1C6.48 1 2 5.48 2 11s4.48 10 10 10 10-4.48 10-10S17.52 1 12 1zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                      </svg>
+                      <p className="text-sm text-[#FFFFFF] font-bold">
+                        Only authorized Gmail accounts can access this admin
+                        panel
+                      </p>
+                    </div>
+                    <p className="text-xs text-[#B0D4F1] font-medium ml-8">
+                      Contact the administrator if you believe your email should
+                      be authorized.
+                    </p>
+                  </div>
                 </div>
 
+                {/* Error Message */}
                 {loginError && (
-                  <div className="p-4 bg-destructive/10 border border-destructive rounded-lg text-destructive text-sm font-medium animate-fadeIn">
-                    ⚠️ {loginError}
+                  <div className="p-4 bg-red-900/20 border border-red-600/50 rounded-xl text-red-400 text-sm font-semibold animate-fadeIn flex items-center gap-3">
+                    <svg
+                      className="w-5 h-5 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                    </svg>
+                    <span>{loginError}</span>
                   </div>
                 )}
 
+                {/* Google Sign-In Button - Official Design */}
                 <button
                   type="button"
                   onClick={handleLogin}
                   disabled={isLoggingIn}
-                  className="w-full px-4 py-3 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                  className="w-full px-5 py-3 bg-white text-[#202124] font-semibold text-base rounded-lg border border-[#dadce0] hover:border-[#d3d3d3] hover:bg-[#f8f8f8] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white active:scale-95 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-3"
                 >
                   <svg
                     className="w-5 h-5"
                     viewBox="0 0 24 24"
-                    fill="currentColor"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
                   </svg>
-                  {isLoggingIn ? "Signing in..." : "Sign in with Google"}
+                  <span>
+                    {isLoggingIn ? "Signing in..." : "Sign in with Google"}
+                  </span>
                 </button>
+
+                {/* Footer Text */}
+                <p className="text-xs text-[#666666] text-center font-medium">
+                  Your credentials are securely processed by Google
+                </p>
               </div>
             </div>
+
+            {/* Additional Info */}
+            <p className="text-xs text-[#666666] text-center mt-6 font-medium">
+              By signing in, you agree to the platform's terms
+            </p>
           </div>
         </div>
         <Footer />
@@ -244,207 +484,544 @@ export default function UppostPanel() {
       <Header />
       <main className="flex-1 w-full">
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-background via-card/50 to-background pt-8 pb-8 md:pt-16 md:pb-12 border-b border-border/50">
+        <div className="bg-background pt-6 pb-6 md:pt-12 md:pb-10 border-b border-border/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0">
               <div
-                className="animate-fadeIn"
+                className="animate-fadeIn flex-1 min-w-0"
                 style={{ animationDelay: "0.1s" }}
               >
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 text-foreground tracking-tighter leading-tight flex items-center gap-2">
-                  <UploadIcon className="w-8 h-8 text-accent" />
-                  Upload Panel
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-2 text-foreground tracking-tighter leading-tight flex items-center gap-2 flex-wrap">
+                  <UploadIcon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-accent flex-shrink-0" />
+                  <span>Upload Panel</span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl font-semibold text-muted-foreground mb-4">
+                <p className="text-xs sm:text-sm md:text-base font-semibold text-muted-foreground mb-3 break-all">
                   Logged in as:{" "}
                   <span className="text-accent font-bold">{email}</span>
                 </p>
-                <div className="flex flex-wrap gap-3 items-center">
-                  <span className="inline-block px-3 py-1.5 bg-accent/20 text-accent font-semibold text-sm rounded-full">
-                    ✓ Authenticated
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="inline-flex items-center gap-2 px-2.5 py-1 bg-green-600/20 text-green-400 font-semibold text-xs rounded-full border border-green-600/30">
+                    <svg
+                      className="w-3 h-3 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Authenticated
                   </span>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-6 py-3 bg-destructive/90 hover:bg-destructive text-destructive-foreground font-bold rounded-lg transition-all shadow-md hover:shadow-lg active:scale-95 whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-destructive/90 hover:bg-destructive text-destructive-foreground font-bold text-sm sm:text-base rounded-lg transition-all shadow-md hover:shadow-lg active:scale-95 whitespace-nowrap w-full sm:w-auto"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                 Logout
               </button>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <form
             onSubmit={handleUpload}
-            className="bg-card border border-border rounded-xl p-6 sm:p-8 md:p-10 space-y-8 shadow-xl hover:shadow-2xl transition-shadow duration-300 animate-fadeIn"
+            className="bg-card border border-border/50 rounded-xl sm:rounded-2xl p-5 sm:p-7 md:p-10 space-y-6 sm:space-y-8 shadow-2xl hover:shadow-3xl transition-all duration-300 animate-fadeIn backdrop-blur-sm"
             style={{ animationDelay: "0.2s" }}
           >
             {/* Title */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInDown"
+              style={{ animationDelay: "0.25s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Post Title <span className="text-destructive">*</span>
               </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
-                placeholder="Enter post title"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                  placeholder="Enter post title"
+                />
+              </div>
             </div>
 
             {/* Description */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInUp"
+              style={{ animationDelay: "0.27s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Description <span className="text-destructive">*</span>
               </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none transition-all"
-                rows={5}
-                placeholder="Enter post description"
-              />
+              <div className="relative">
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none transition-all duration-200 text-sm"
+                  rows={4}
+                  placeholder="Enter post description"
+                />
+              </div>
             </div>
 
             {/* Thumbnail Upload */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInDown"
+              style={{ animationDelay: "0.29s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Thumbnail Image <span className="text-destructive">*</span>
               </label>
-              <div className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-accent hover:bg-accent/5 transition-all">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div
+                  className={`col-span-1 md:col-span-1 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all duration-300 ${
+                    thumbnailDragActive
+                      ? "border-accent/100 bg-accent/20"
+                      : "border-border/70 hover:border-accent/70 hover:bg-accent/10 bg-background/30"
+                  }`}
+                  onDragEnter={handleThumbnailDrag}
+                  onDragLeave={handleThumbnailDrag}
+                  onDragOver={handleThumbnailDrag}
+                  onDrop={handleThumbnailDrop}
+                >
+                  <input
+                    type="file"
+                    onChange={handleThumbnailChange}
+                    accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/svg+xml,image/bmp,image/tiff,image/heic,image/heif,image/avif"
+                    className="hidden"
+                    id="thumbnail-upload"
+                    ref={thumbnailInputRef}
+                  />
+                  <label
+                    htmlFor="thumbnail-upload"
+                    className="cursor-pointer block"
+                  >
+                    {thumbnail ? (
+                      <div className="space-y-1">
+                        <svg
+                          className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-accent"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <p className="text-xs font-bold text-accent break-all px-1">
+                          {thumbnail.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {(thumbnail.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-muted-foreground" />
+                        <p className="text-xs font-bold text-foreground">
+                          Click or drag
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          thumbnail
+                        </p>
+                      </div>
+                    )}
+                  </label>
+                </div>
+
+                {thumbnailPreview && (
+                  <div className="col-span-1 md:col-span-2 relative group">
+                    <img
+                      src={thumbnailPreview}
+                      alt="Thumbnail Preview"
+                      className="max-h-32 sm:max-h-40 rounded-lg border border-border object-cover w-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setThumbnail(null);
+                        setThumbnailPreview("");
+                        if (thumbnailInputRef.current) {
+                          thumbnailInputRef.current.value = "";
+                        }
+                      }}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Location Info */}
+            <div
+              className="bg-background/40 border border-border/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 animate-slideInUp"
+              style={{ animationDelay: "0.3s" }}
+            >
+              <h3 className="text-xs sm:text-sm font-bold text-foreground mb-4 sm:mb-6 uppercase tracking-wider opacity-75">
+                Location Information (Optional)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {/* Country */}
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.35s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground flex items-center gap-2">
+                    <svg
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      <path d="M2 12h20" />
+                    </svg>
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="(optional)"
+                  />
+                </div>
+
+                {/* City */}
+                <div
+                  className="animate-slideInUp"
+                  style={{ animationDelay: "0.37s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground flex items-center gap-2">
+                    <svg
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="(optional)"
+                  />
+                </div>
+
+                {/* Server */}
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.39s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground flex items-center gap-2">
+                    <svg
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect x="2" y="2" width="20" height="8" />
+                      <rect x="2" y="14" width="20" height="8" />
+                      <line x1="6" y1="6" x2="6" y2="6.01" />
+                      <line x1="6" y1="18" x2="6" y2="18.01" />
+                    </svg>
+                    Server Name
+                  </label>
+                  <input
+                    type="text"
+                    value={server}
+                    onChange={(e) => setServer(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="(optional)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Personal Information Section */}
+            <div
+              className="bg-background/40 border border-border/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 animate-slideInUp"
+              style={{ animationDelay: "0.41s" }}
+            >
+              <h3 className="text-xs sm:text-sm font-bold text-foreground mb-4 sm:mb-6 uppercase tracking-wider opacity-75">
+                Personal Information (Optional)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                {/* Discord Username */}
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.43s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Discord Username
+                  </label>
+                  <input
+                    type="text"
+                    value={discordUsername}
+                    onChange={(e) => setDiscordUsername(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., user#1234"
+                  />
+                </div>
+
+                {/* Discord Name */}
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.43s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Discord Name
+                  </label>
+                  <input
+                    type="text"
+                    value={discordName}
+                    onChange={(e) => setDiscordName(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., Display Name"
+                  />
+                </div>
+
+                {/* Real Name */}
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.45s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Real Name
+                  </label>
+                  <input
+                    type="text"
+                    value={realName}
+                    onChange={(e) => setRealName(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., John Doe"
+                  />
+                </div>
+
+                {/* Age */}
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.45s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Age
+                  </label>
+                  <input
+                    type="text"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., 25"
+                  />
+                </div>
+
+                {/* Email */}
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.47s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={personalEmail}
+                    onChange={(e) => setPersonalEmail(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., user@example.com"
+                  />
+                </div>
+
+                {/* IP Address */}
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.47s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    IP Address
+                  </label>
+                  <input
+                    type="text"
+                    value={ipAddress}
+                    onChange={(e) => setIpAddress(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., 192.168.1.1"
+                  />
+                </div>
+
+                {/* Address */}
+                <div
+                  className="animate-slideInLeft"
+                  style={{ animationDelay: "0.49s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Address
+                  </label>
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., 123 Main St, City, State"
+                  />
+                </div>
+
+                {/* Phone Number */}
+                <div
+                  className="animate-slideInRight"
+                  style={{ animationDelay: "0.49s" }}
+                >
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="e.g., +1-555-0123"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* NSFW Checkbox */}
+            <div
+              className="relative overflow-hidden animate-slideInLeft"
+              style={{ animationDelay: "0.53s" }}
+            >
+              <div className="relative flex items-start sm:items-center gap-3 bg-[#FF0000]/15 border-2 border-[#FF0000]/40 hover:border-[#FF0000]/60 rounded-lg sm:rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:shadow-[#FF0000]/10">
                 <input
-                  type="file"
-                  onChange={handleThumbnailChange}
-                  accept="image/*"
-                  className="hidden"
-                  id="thumbnail-upload"
+                  type="checkbox"
+                  id="nsfw-checkbox"
+                  checked={nsfw}
+                  onChange={(e) => setNsfw(e.target.checked)}
+                  className="w-4 h-4 sm:w-5 sm:h-5 accent-[#FF0000] rounded cursor-pointer flex-shrink-0 mt-0.5 sm:mt-0"
                 />
                 <label
-                  htmlFor="thumbnail-upload"
-                  className="cursor-pointer block"
+                  htmlFor="nsfw-checkbox"
+                  className="flex-1 cursor-pointer"
                 >
-                  {thumbnail ? (
-                    <div className="space-y-3">
-                      <svg
-                        className="w-6 h-6 mx-auto text-accent"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <p className="text-sm font-bold text-accent">
-                        {thumbnail.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {(thumbnail.size / 1024 / 1024).toFixed(2)} MB • Ready
-                        to upload
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <ImageIcon className="w-10 h-10 mx-auto text-muted-foreground" />
-                      <p className="text-sm font-bold text-foreground">
-                        Click to upload thumbnail
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Images only (Max 50MB)
-                      </p>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
+                    <svg
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FF0000] flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                    </svg>
+                    <p className="text-xs sm:text-sm font-bold text-[#FF0000]">
+                      Mark as NSFW Content
+                    </p>
+                  </div>
+                  <p className="text-xs text-[#FF0000]/80 ml-5.5 sm:ml-6">
+                    This content is Not Safe For Work and requires age
+                    verification
+                  </p>
+                </label>
+              </div>
+            </div>
+
+            {/* Trend Checkbox */}
+            <div
+              className="relative overflow-hidden animate-slideInRight"
+              style={{ animationDelay: "0.53s" }}
+            >
+              <div className="relative flex items-start sm:items-center gap-3 bg-amber-900/15 border-2 border-amber-600/40 hover:border-amber-600/60 rounded-lg sm:rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:shadow-amber-600/10">
+                <input
+                  type="checkbox"
+                  id="trend-checkbox"
+                  checked={isTrend}
+                  onChange={(e) => setIsTrend(e.target.checked)}
+                  className="w-4 h-4 sm:w-5 sm:h-5 accent-amber-600 rounded cursor-pointer flex-shrink-0 mt-0.5 sm:mt-0"
+                />
+                <label
+                  htmlFor="trend-checkbox"
+                  className="flex-1 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
+                    <svg
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                    <p className="text-xs sm:text-sm font-bold text-amber-400">
+                      Mark as Trending Post
+                    </p>
+                  </div>
+                  <p className="text-xs text-amber-300/80 ml-5.5 sm:ml-6">
+                    Posts marked as trending will appear first with a special
+                    golden gradient
+                  </p>
                 </label>
               </div>
 
-              {thumbnailPreview && (
-                <div className="mt-6 relative group">
-                  <img
-                    src={thumbnailPreview}
-                    alt="Thumbnail Preview"
-                    className="max-h-48 rounded-xl mx-auto border border-border object-cover"
+              {isTrend && (
+                <div className="mt-3 sm:mt-4 animate-fadeIn">
+                  <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
+                    Trend Rank Number
+                  </label>
+                  <input
+                    type="number"
+                    value={trendRank}
+                    onChange={(e) => setTrendRank(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
+                    placeholder="Enter rank number (1 appears first, 2 second, etc.)"
+                    min="1"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setThumbnail(null);
-                      setThumbnailPreview("");
-                    }}
-                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <p className="text-xs text-muted-foreground mt-1.5 sm:mt-2">
+                    Lower numbers appear first. E.g., rank 1 appears before rank
+                    2
+                  </p>
                 </div>
               )}
             </div>
 
-            {/* Location Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Country */}
-              <div>
-                <label className="block text-sm font-bold mb-3 text-foreground">
-                  🌍 Country
-                </label>
-                <input
-                  type="text"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
-                  placeholder="(optional)"
-                />
-              </div>
-
-              {/* City */}
-              <div>
-                <label className="block text-sm font-bold mb-3 text-foreground">
-                  🏙️ City
-                </label>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
-                  placeholder="(optional)"
-                />
-              </div>
-
-              {/* Server */}
-              <div>
-                <label className="block text-sm font-bold mb-3 text-foreground">
-                  🖥️ Server Name
-                </label>
-                <input
-                  type="text"
-                  value={server}
-                  onChange={(e) => setServer(e.target.value)}
-                  className="w-full px-4 py-3 bg-background border border-border hover:border-accent/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
-                  placeholder="(optional)"
-                />
-              </div>
-            </div>
-
             {/* Media Upload */}
-            <div>
-              <label className="block text-sm font-bold mb-3 text-foreground">
+            <div
+              className="animate-slideInUp"
+              style={{ animationDelay: "0.51s" }}
+            >
+              <label className="block text-xs sm:text-sm font-bold mb-2 sm:mb-3 text-foreground">
                 Media Files <span className="text-destructive">*</span>
               </label>
-              <div className="border-2 border-dashed border-border rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 transition-all">
+              <div
+                className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center cursor-pointer transition-all duration-300 ${
+                  mediaDragActive
+                    ? "border-accent/100 bg-accent/20"
+                    : "border-border/70 hover:border-accent/70 hover:bg-accent/10 bg-background/30"
+                }`}
+                onDragEnter={handleMediaDrag}
+                onDragLeave={handleMediaDrag}
+                onDragOver={handleMediaDrag}
+                onDrop={handleMediaDrop}
+              >
                 <input
                   type="file"
                   onChange={handleMediaChange}
-                  accept="image/*,video/*"
+                  accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/svg+xml,image/bmp,image/tiff,image/heic,image/heif,image/avif,video/mp4,video/webm,video/quicktime,video/x-msvideo,video/x-matroska,video/x-flv,video/x-m4v,video/mpeg,video/mp2t,video/x-ms-wmv,video/mxf,video/ogg"
                   multiple
                   className="hidden"
                   id="media-upload"
+                  ref={mediaInputRef}
                 />
                 <label htmlFor="media-upload" className="cursor-pointer block">
                   {mediaFiles.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-1">
                       <svg
-                        className="w-6 h-6 mx-auto text-accent"
+                        className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-accent"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -452,22 +1029,22 @@ export default function UppostPanel() {
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      <p className="text-sm font-bold text-accent">
+                      <p className="text-xs sm:text-sm font-bold text-accent">
                         {mediaFiles.length} file
                         {mediaFiles.length !== 1 ? "s" : ""} selected
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Click to add more files
+                        Click or drag to add more
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <UploadIcon className="w-10 h-10 mx-auto text-muted-foreground" />
-                      <p className="text-sm font-bold text-foreground">
-                        Click to upload media files
+                    <div className="space-y-1">
+                      <UploadIcon className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-muted-foreground" />
+                      <p className="text-xs sm:text-sm font-bold text-foreground">
+                        Click or drag files
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Images and videos supported (Max 100MB each)
+                        Images and videos supported
                       </p>
                     </div>
                   )}
@@ -475,39 +1052,41 @@ export default function UppostPanel() {
               </div>
 
               {mediaPreviews.length > 0 && (
-                <div className="mt-6">
-                  <div className="mb-4">
-                    <p className="text-sm font-semibold text-foreground mb-3">
-                      Uploaded Media ({mediaPreviews.length})
-                    </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {mediaPreviews.map((media, idx) => (
-                        <div key={idx} className="relative group">
-                          {media.type.startsWith("image/") ? (
-                            <img
-                              src={media.preview}
-                              alt={`Preview ${idx}`}
-                              className="w-full aspect-square rounded-lg border border-border object-cover"
-                            />
-                          ) : (
-                            <video
-                              src={media.preview}
-                              className="w-full aspect-square rounded-lg border border-border object-cover bg-muted"
-                            />
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => removeMediaFile(idx)}
-                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                          <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                            {idx + 1}
-                          </div>
+                <div className="mt-4">
+                  <p className="text-xs sm:text-sm font-semibold text-foreground mb-2">
+                    Uploaded Media ({mediaPreviews.length})
+                  </p>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                    {mediaPreviews.map((media, idx) => (
+                      <div
+                        key={idx}
+                        className="relative group animate-scaleUpFadeIn"
+                        style={{ animationDelay: `${idx * 0.05}s` }}
+                      >
+                        {media.type.startsWith("image/") ? (
+                          <img
+                            src={media.preview}
+                            alt={`Preview ${idx}`}
+                            className="w-full aspect-square rounded-md border border-border object-cover hover:border-accent/60 transition-colors"
+                          />
+                        ) : (
+                          <video
+                            src={media.preview}
+                            className="w-full aspect-square rounded-md border border-border object-cover bg-muted hover:border-accent/60 transition-colors"
+                          />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeMediaFile(idx)}
+                          className="absolute top-0 right-0 bg-destructive text-destructive-foreground p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        <div className="absolute bottom-0 left-0 bg-black/50 text-white text-xs px-1 py-0.5 rounded-br-md">
+                          {idx + 1}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -515,22 +1094,36 @@ export default function UppostPanel() {
 
             {uploadMessage && (
               <div className="p-4 bg-green-900/20 border border-green-600/50 rounded-lg text-green-400 text-sm font-medium flex items-center gap-2 animate-fadeIn">
-                <span>✓</span> {uploadMessage}
+                <svg
+                  className="w-4 h-4 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                {uploadMessage}
               </div>
             )}
 
             {uploadError && (
               <div className="p-4 bg-destructive/10 border border-destructive/50 rounded-lg text-destructive text-sm font-medium flex items-center gap-2 animate-fadeIn">
-                <span>⚠️</span> {uploadError}
+                <svg
+                  className="w-4 h-4 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+                {uploadError}
               </div>
             )}
 
             <button
               type="submit"
               disabled={uploading}
-              className="w-full px-4 py-4 bg-accent text-accent-foreground font-bold rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 sm:py-4 bg-accent text-accent-foreground font-bold text-sm sm:text-base rounded-lg sm:rounded-xl hover:bg-accent/90 hover:shadow-2xl hover:shadow-accent/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2 animate-popIn"
             >
-              <UploadIcon className="w-5 h-5" />
+              <UploadIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               {uploading ? "Uploading..." : "Upload Post"}
             </button>
           </form>

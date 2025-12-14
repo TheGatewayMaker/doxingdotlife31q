@@ -1,17 +1,24 @@
 [build]
-  command = "npm run build:client"
-  functions = "netlify/functions"
+  command = "npm run build"
   publish = "dist/spa"
-
+  functions = "netlify/functions"
 
 [functions]
+  directory = "netlify/functions"
   node_bundler = "esbuild"
-  
+  included_files = ["server/**/*", "shared/**/*"]
+  # Do NOT set functions.timeout = 26 here (global scalar). Use per-function sub-table below.
+
+# Per-function overrides using a sub-table of [functions]
+[functions.api]
+  timeout = 26
+  memory = 3008
+
 [[redirects]]
-  force = true
   from = "/api/*"
-  status = 200
   to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"

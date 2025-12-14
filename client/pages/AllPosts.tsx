@@ -5,10 +5,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SearchBar from "@/components/SearchBar";
 import { Post, PostsResponse } from "@shared/api";
-import { GlobeIcon, MapPinIcon, DiscordIcon } from "@/components/Icons";
+import { GlobeIcon, MapPinIcon, ServerIcon } from "@/components/Icons";
 import { Flame } from "lucide-react";
 
-export default function Index() {
+export default function AllPosts() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -108,12 +108,11 @@ export default function Index() {
               className="animate-slideInLeftFade"
               style={{ animationDelay: "0.1s" }}
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-3 sm:mb-4 md:mb-5 text-white tracking-tighter leading-tight">
-                Doxing Dot Life
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 sm:mb-4 text-white tracking-tighter leading-tight">
+                All Posts
               </h1>
-              <p className="hidden sm:block text-sm sm:text-base md:text-lg lg:text-xl font-medium text-[#979797] mb-5 sm:mb-6 md:mb-8 max-w-3xl leading-relaxed">
-                The largest database of exposed individuals. Search, dox, and
-                expose information on anyone in our comprehensive directory.
+              <p className="hidden sm:block text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-[#979797] mb-5 sm:mb-6 max-w-2xl leading-relaxed">
+                Browse all the doxed individuals in our database
               </p>
             </div>
 
@@ -130,7 +129,7 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Posts Section */}
+        {/* All Posts */}
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 lg:py-8">
           <div className="mb-4 sm:mb-6 md:mb-8 animate-slideInUp">
             {isLoadingPosts ? (
@@ -161,12 +160,12 @@ export default function Index() {
                 <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 mb-0.5 sm:mb-1 md:mb-2">
                   <Flame className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-orange-500" />
                   <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white">
-                    Trending
+                    All Posts
                   </h2>
                 </div>
-                <p className="text-[#979797] text-xs sm:text-sm md:text-base">
-                  Showing {displayedPosts.length} of {filteredPosts.length}{" "}
-                  result{filteredPosts.length !== 1 ? "s" : ""}
+                <p className="text-[#979797] text-xs sm:text-sm md:text-base mt-0">
+                  Showing {displayedPosts.length} of {filteredPosts.length} post
+                  {filteredPosts.length !== 1 ? "s" : ""}
                 </p>
               </>
             )}
@@ -247,7 +246,7 @@ export default function Index() {
                       </p>
                       <div className="hidden sm:flex flex-wrap gap-1 opacity-100 group-hover:opacity-100 transition-opacity">
                         {post.country && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-[#d0d0d0] border border-white/20 flex-shrink-0 hover:bg-white/20 hover:border-[#0088CC] transition-all">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-[#2a2a2a] text-[#e0e0e0] border border-[#444444] flex-shrink-0 hover:border-[#0088CC] transition-all">
                             <GlobeIcon className="w-2.5 h-2.5" />
                             <span className="hidden sm:inline">
                               {post.country.substring(0, 3)}
@@ -255,7 +254,7 @@ export default function Index() {
                           </span>
                         )}
                         {post.city && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-[#d0d0d0] border border-white/20 flex-shrink-0 hover:bg-white/20 hover:border-[#0088CC] transition-all">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-[#2a2a2a] text-[#e0e0e0] border border-[#444444] flex-shrink-0 hover:border-[#0088CC] transition-all">
                             <MapPinIcon className="w-2.5 h-2.5" />
                             <span className="hidden sm:inline">
                               {post.city.substring(0, 3)}
@@ -313,18 +312,17 @@ export default function Index() {
             </>
           ) : (
             <div
-              className="text-center py-16 sm:py-20 animate-popIn"
+              className="text-center py-16 animate-popIn"
               style={{ animationDelay: "0.2s" }}
             >
               <div
                 className="text-5xl sm:text-6xl mb-4 animate-slideInDown"
                 style={{ animationDelay: "0.3s" }}
               >
-                🔍
+                📋
               </div>
-              <p className="text-[#979797] text-sm sm:text-base max-w-lg mx-auto">
-                No posts match your current search filters. Try adjusting your
-                search terms or filters.
+              <p className="text-gray-400 text-base sm:text-lg">
+                No posts match your search criteria. Try adjusting your filters.
               </p>
             </div>
           )}

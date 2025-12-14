@@ -66,30 +66,38 @@ export const handleGetPosts: RequestHandler = async (req, res) => {
     const posts: Post[] = [];
 
     for (const postId of postIds) {
-      const postData = await getPostWithThumbnail(postId);
-      if (postData) {
-        const mediaFiles = await listPostFiles(postId);
-        const mediaFileObjects = mediaFiles
-          .map((fileName) => ({
-            name: fileName,
-            url: getMediaUrl(`posts/${postId}/${fileName}`),
-            type: getMimeType(fileName),
-          }))
-          .filter((f) => f.name !== "metadata.json");
+      try {
+        const postData = await getPostWithThumbnail(postId);
+        if (postData) {
+          const mediaFiles = await listPostFiles(postId);
+          const mediaFileObjects = mediaFiles
+            .map((fileName) => ({
+              name: fileName,
+              url: `/api/media/${postId}/${fileName}`,
+              type: getMimeType(fileName),
+            }))
+            .filter((f) => f.name !== "metadata.json");
 
-        const post: Post = {
-          id: postData.id,
-          title: postData.title,
-          description: postData.description,
-          country: postData.country,
-          city: postData.city,
-          server: postData.server,
-          thumbnail: postData.thumbnail,
-          mediaFiles: mediaFileObjects,
-          createdAt: postData.createdAt,
-        };
+          const post: Post = {
+            id: postData.id,
+            title: postData.title,
+            description: postData.description,
+            country: postData.country,
+            city: postData.city,
+            server: postData.server,
+            thumbnail: postData.thumbnail,
+            nsfw: postData.nsfw || false,
+            isTrend: postData.isTrend || false,
+            trendRank: postData.trendRank,
+            mediaFiles: mediaFileObjects,
+            createdAt: postData.createdAt,
+          };
 
-        posts.push(post);
+          posts.push(post);
+        }
+      } catch (postError) {
+        console.warn(`Error loading post ${postId}:`, postError);
+        continue;
       }
     }
 

@@ -4,154 +4,145 @@ import { ArrowRight } from "lucide-react";
 
 export default function DoxAnyone() {
   const handleDoxNow = () => {
-    window.open("https://discord.com", "_blank");
+    window.open("https://discord.gg/95eC83gtFN", "_blank");
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col animate-fadeIn">
+    <div className="min-h-screen bg-[#000000] text-white flex flex-col animate-fadeIn">
       <Header />
       <main className="flex-1 w-full">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
           {/* Header Section */}
-          <div className="text-center mb-10 sm:mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 text-blue-500">
+          <div
+            className="text-center mb-6 sm:mb-8 animate-slideInDown"
+            style={{ animationDelay: "0.1s" }}
+          >
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black mb-2 text-[#0088CC]">
               Dox Anyone
             </h1>
-            <p className="text-base sm:text-lg text-gray-400 mb-6 max-w-2xl mx-auto">
-              Expose individuals publicly on our platform
+            <p className="text-sm text-[#979797] max-w-2xl mx-auto font-semibold">
+              Expose individuals on our platform
             </p>
           </div>
 
           {/* Pricing Section */}
-          <div className="bg-slate-800 border-2 border-slate-700 rounded-lg sm:rounded-xl p-6 sm:p-8 mb-10 sm:mb-12">
-            <h2 className="text-xl sm:text-2xl font-bold mb-5 sm:mb-6 text-white">
-              Service Pricing
+          <div
+            className="bg-[#1a1a1a] border-2 border-[#666666] rounded-lg p-4 sm:p-6 mb-6 sm:mb-8 animate-scaleUpFadeIn"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <h2 className="text-lg sm:text-xl font-black mb-4 text-white">
+              Pricing
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              <div className="bg-slate-900 rounded-lg p-5 sm:p-6 border border-blue-500 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
-                <p className="text-xs sm:text-sm font-semibold text-blue-400 mb-2">
-                  PAKISTAN
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#00A8E8] hover:border-[#00C4FF] hover:shadow-lg hover:shadow-[#00A8E8]/30 transition-all duration-300">
+                <p className="text-xs font-black text-[#00A8E8] mb-1 uppercase tracking-wider">
+                  United States
                 </p>
-                <p className="text-2xl sm:text-3xl font-black text-blue-500">
-                  299
-                </p>
-                <p className="text-xs sm:text-sm text-blue-400 font-semibold">
-                  PKR
-                </p>
+                <p className="text-2xl font-black text-[#00A8E8]">$ 1.10</p>
+                <p className="text-xs text-[#00A8E8] font-bold">USD</p>
               </div>
-              <div className="bg-slate-900 rounded-lg p-5 sm:p-6 border border-blue-500 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
-                <p className="text-xs sm:text-sm font-semibold text-blue-400 mb-2">
-                  UNITED STATES
+              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#FF9500] hover:border-[#FFB84D] hover:shadow-lg hover:shadow-[#FF9500]/30 transition-all duration-300">
+                <p className="text-xs font-black text-[#FFB84D] mb-1 uppercase tracking-wider">
+                  India
                 </p>
-                <p className="text-2xl sm:text-3xl font-black text-blue-500">
-                  1.10
-                </p>
-                <p className="text-xs sm:text-sm text-blue-400 font-semibold">
-                  USD
-                </p>
+                <p className="text-2xl font-black text-[#FFB84D]">₹ 99</p>
+                <p className="text-xs text-[#FFB84D] font-bold">INR</p>
               </div>
-              <div className="bg-slate-900 rounded-lg p-5 sm:p-6 border border-blue-500 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
-                <p className="text-xs sm:text-sm font-semibold text-blue-400 mb-2">
-                  INDIA
+              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-[#06D6A0] hover:border-[#2AE8B8] hover:shadow-lg hover:shadow-[#06D6A0]/30 transition-all duration-300">
+                <p className="text-xs font-black text-[#2AE8B8] mb-1 uppercase tracking-wider">
+                  Pakistan
                 </p>
-                <p className="text-2xl sm:text-3xl font-black text-blue-500">
-                  99
-                </p>
-                <p className="text-xs sm:text-sm text-blue-400 font-semibold">
-                  INR
-                </p>
+                <p className="text-2xl font-black text-[#2AE8B8]">Rs 299</p>
+                <p className="text-xs text-[#2AE8B8] font-bold">PKR</p>
               </div>
             </div>
           </div>
 
           {/* Instructions Section */}
-          <div className="bg-slate-800 border-2 border-slate-700 rounded-lg sm:rounded-xl p-6 sm:p-8 mb-10 sm:mb-12">
-            <h2 className="text-xl sm:text-2xl font-bold mb-5 sm:mb-6 text-white">
+          <div
+            className="bg-[#1a1a1a] border-2 border-[#666666] rounded-lg p-4 sm:p-6 mb-6 sm:mb-8 animate-slideInUp"
+            style={{ animationDelay: "0.3s" }}
+          >
+            <h2 className="text-lg sm:text-xl font-black mb-4 text-white">
               How It Works
             </h2>
-            <div className="space-y-5 sm:space-y-6">
-              <div className="flex gap-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-blue-600 text-white font-bold text-sm sm:text-base hover:bg-blue-700 transition-colors">
+                  <div className="flex items-center justify-center h-7 w-7 rounded-md bg-[#0088CC] text-white font-bold text-xs hover:bg-[#0077BB] transition-colors">
                     1
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
-                    Click the Dox Button Below
+                  <h3 className="text-sm font-bold text-white mb-0.5">
+                    Click Dox Button
                   </h3>
-                  <p className="text-sm text-gray-400">
-                    Click on the "Dox Now" button to proceed with creating your
-                    doxing submission.
+                  <p className="text-xs text-[#979797] font-semibold">
+                    Start your doxing submission process.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-blue-600 text-white font-bold text-sm sm:text-base hover:bg-blue-700 transition-colors">
+                  <div className="flex items-center justify-center h-7 w-7 rounded-md bg-[#0088CC] text-white font-bold text-xs hover:bg-[#0077BB] transition-colors">
                     2
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
-                    Create a Support Ticket on Discord
+                  <h3 className="text-sm font-bold text-white mb-0.5">
+                    Discord Ticket
                   </h3>
-                  <p className="text-sm text-gray-400">
-                    Create a support ticket on our Discord Server with your
-                    doxing request details.
+                  <p className="text-xs text-[#979797] font-semibold">
+                    Create a support ticket on Discord with details.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-blue-600 text-white font-bold text-sm sm:text-base hover:bg-blue-700 transition-colors">
+                  <div className="flex items-center justify-center h-7 w-7 rounded-md bg-[#0088CC] text-white font-bold text-xs hover:bg-[#0077BB] transition-colors">
                     3
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
-                    Prepare Your Content
+                  <h3 className="text-sm font-bold text-white mb-0.5">
+                    Prepare Content
                   </h3>
-                  <p className="text-sm text-gray-400">
-                    Make sure to have a photo and some details for the specific
-                    person you want to dox. The more information you provide,
-                    the better.
+                  <p className="text-xs text-[#979797] font-semibold">
+                    Gather photo and details for verification.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-blue-600 text-white font-bold text-sm sm:text-base hover:bg-blue-700 transition-colors">
+                  <div className="flex items-center justify-center h-7 w-7 rounded-md bg-[#0088CC] text-white font-bold text-xs hover:bg-[#0077BB] transition-colors">
                     4
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
-                    Payment & Verification
+                  <h3 className="text-sm font-bold text-white mb-0.5">
+                    Payment
                   </h3>
-                  <p className="text-sm text-gray-400">
-                    Complete the payment as per the pricing in your region. One
-                    of our moderators will verify your submission.
+                  <p className="text-xs text-[#979797] font-semibold">
+                    Complete payment. Moderators verify submission.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-blue-600 text-white font-bold text-sm sm:text-base hover:bg-blue-700 transition-colors">
+                  <div className="flex items-center justify-center h-7 w-7 rounded-md bg-[#0088CC] text-white font-bold text-xs hover:bg-[#0077BB] transition-colors">
                     5
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">
-                    Publication
+                  <h3 className="text-sm font-bold text-white mb-0.5">
+                    Publish
                   </h3>
-                  <p className="text-sm text-gray-400">
-                    After payment confirmation and verification, one of our
-                    moderators will post your dox on our website.
+                  <p className="text-xs text-[#979797] font-semibold">
+                    After verification, post goes live on website.
                   </p>
                 </div>
               </div>
@@ -159,14 +150,27 @@ export default function DoxAnyone() {
           </div>
 
           {/* Call to Action */}
-          <div className="text-center mt-6 sm:mt-8">
+          <div
+            className="text-center mt-4 sm:mt-6 animate-popIn"
+            style={{ animationDelay: "0.4s" }}
+          >
             <button
               onClick={handleDoxNow}
-              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-sm sm:text-base rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-[#0088CC] text-white font-bold text-sm rounded-lg hover:bg-[#0077BB] shadow-md hover:shadow-lg hover:shadow-[#0088CC]/40 transition-all duration-300 transform hover:scale-105 active:scale-95"
             >
               Dox Now
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
+            <div className="mt-4 sm:mt-6">
+              <a
+                href="https://discord.gg/95eC83gtFN"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#0088CC] hover:text-[#00C4FF] font-semibold text-sm transition-colors duration-300"
+              >
+                Or join our Discord community
+              </a>
+            </div>
           </div>
         </div>
       </main>
