@@ -65,6 +65,11 @@ export async function addWatermarkToVideo(
   videoName: string,
 ): Promise<void> {
   try {
+    // Validate that we have a URL
+    if (!videoUrl || typeof videoUrl !== "string") {
+      throw new Error("Invalid video URL provided");
+    }
+
     // Call server endpoint to process video with watermark
     const response = await fetch("/api/watermark-video", {
       method: "POST",
@@ -76,17 +81,27 @@ export async function addWatermarkToVideo(
 
     if (!response.ok) {
       let errorMessage = "";
+      let errorData: any = {};
 
       try {
-        const errorData = await response.json();
-        errorMessage = errorData.error || errorData.message || "";
+        errorData = await response.json();
+        errorMessage =
+          errorData.error ||
+          errorData.message ||
+          `Server returned ${response.status}`;
       } catch {
-        errorMessage = response.statusText;
+        errorMessage = response.statusText || `HTTP ${response.status}`;
       }
 
       if (response.status === 503) {
         throw new Error(
           "Video watermarking service is unavailable. FFmpeg needs to be installed on the server.",
+        );
+      }
+
+      if (response.status === 400) {
+        throw new Error(
+          `Invalid request: ${errorMessage}. Please ensure the video URL is valid.`,
         );
       }
 
