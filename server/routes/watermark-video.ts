@@ -29,7 +29,8 @@ export const handleWatermarkVideo: RequestHandler = async (req, res) => {
     if (!videoUrl.startsWith("http://") && !videoUrl.startsWith("https://")) {
       // Build the origin from the request
       const protocol = req.get("x-forwarded-proto") || req.protocol || "http";
-      const host = req.get("x-forwarded-host") || req.get("host") || "localhost";
+      const host =
+        req.get("x-forwarded-host") || req.get("host") || "localhost";
       const origin = `${protocol}://${host}`;
       absoluteUrl = new URL(videoUrl, origin).toString();
     }
