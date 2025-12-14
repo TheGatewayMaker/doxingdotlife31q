@@ -38,6 +38,9 @@ const upload = multer({
 export function createServer() {
   const app = express();
 
+  // Initialize FFmpeg availability check
+  checkFFmpegAvailability();
+
   // Security headers middleware - MUST be before CORS to prevent browser blocking
   app.use((req, res, next) => {
     // Critical headers to allow large uploads without browser blocking
