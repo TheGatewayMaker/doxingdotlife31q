@@ -36,8 +36,12 @@ export default function PostMediaSection({
   const videos = filteredMediaFiles.filter((f) => f.type.startsWith("video/"));
 
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
-  const [videoDurations, setVideoDurations] = useState<{ [key: string]: number }>({});
-  const videoRefsForDuration = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+  const [videoDurations, setVideoDurations] = useState<{
+    [key: string]: number;
+  }>({});
+  const videoRefsForDuration = useRef<{
+    [key: string]: HTMLVideoElement | null;
+  }>({});
 
   if (photos.length === 0 && videos.length === 0) {
     return null;
@@ -191,7 +195,10 @@ export default function PostMediaSection({
         <>
           {isSelectedPhoto && (
             <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-[#666666]">
-              <div className="bg-black flex items-center justify-center w-full" style={{ aspectRatio: "16/9", minHeight: "300px" }}>
+              <div
+                className="bg-black flex items-center justify-center w-full"
+                style={{ aspectRatio: "16/9", minHeight: "300px" }}
+              >
                 <img
                   src={selectedMedia.url}
                   alt={selectedMedia.name}
@@ -256,7 +263,10 @@ export default function PostMediaSection({
 
           {isSelectedVideo && (
             <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-[#666666]">
-              <div className="relative bg-black flex items-center justify-center w-full" style={{ aspectRatio: "16/9", minHeight: "300px" }}>
+              <div
+                className="relative bg-black flex items-center justify-center w-full"
+                style={{ aspectRatio: "16/9", minHeight: "300px" }}
+              >
                 <video
                   key={`video-${selectedMediaIndex}`}
                   controls
@@ -267,7 +277,10 @@ export default function PostMediaSection({
                   playsInline
                   onLoadedMetadata={(e) => {
                     const video = e.currentTarget;
-                    handleVideoDurationLoaded(selectedMedia.url, video.duration);
+                    handleVideoDurationLoaded(
+                      selectedMedia.url,
+                      video.duration,
+                    );
                   }}
                 >
                   <source src={selectedMedia.url} type={selectedMedia.type} />
