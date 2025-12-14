@@ -75,10 +75,24 @@ export async function addWatermarkToVideo(
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      let errorMessage = "";
+
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || "";
+      } catch {
+        errorMessage = response.statusText;
+      }
+
+      if (response.status === 503) {
+        throw new Error(
+          "Video watermarking service is unavailable. FFmpeg needs to be installed on the server.",
+        );
+      }
+
       throw new Error(
-        errorData.error ||
-          `Server returned ${response.status}: ${response.statusText}`,
+        errorMessage ||
+          `Server error ${response.status}: ${response.statusText}`,
       );
     }
 
