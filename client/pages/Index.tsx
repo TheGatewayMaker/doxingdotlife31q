@@ -249,17 +249,13 @@ export default function Index() {
                         {post.country && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-[#d0d0d0] border border-white/20 hover:bg-white/20 hover:border-[#0088CC] transition-all">
                             <GlobeIcon className="w-2.5 h-2.5" />
-                            <span>
-                              {post.country}
-                            </span>
+                            <span>{post.country}</span>
                           </span>
                         )}
                         {post.city && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-[#d0d0d0] border border-white/20 hover:bg-white/20 hover:border-[#0088CC] transition-all">
                             <MapPinIcon className="w-2.5 h-2.5" />
-                            <span>
-                              {post.city}
-                            </span>
+                            <span>{post.city}</span>
                           </span>
                         )}
                       </div>
