@@ -12,6 +12,7 @@ import {
   handleDeletePost,
   handleDeleteMediaFile,
   handleUpdatePost,
+  handleAddAttachments,
 } from "./routes/admin";
 import {
   handleLogin,
@@ -295,6 +296,7 @@ export function createServer() {
   };
 
   // Catch-all async error handler wrapper - defined before routes that use it
+    // Catch-all async error handler wrapper - defined before routes that use it
   const asyncHandler = (
     fn: (
       req: express.Request,
@@ -358,6 +360,23 @@ export function createServer() {
   app.delete("/api/posts/:postId", handleDeletePost);
   app.delete("/api/posts/:postId/media/:fileName", handleDeleteMediaFile);
   app.put("/api/posts/:postId", handleUpdatePost);
+  app.post(
+    "/api/posts/:postId/attachments",
+    (req, res, next) => {
+      try {
+        upload.array("attachments", 50)(req, res, (err) => {
+          if (err) {
+            return multerErrorHandler(err, req, res, next);
+          }
+          next();
+        });
+      } catch (error) {
+        console.error("Error in attachment upload middleware:", error);
+        return multerErrorHandler(error, req, res, next);
+      }
+    },
+    asyncHandler(handleAddAttachments),
+  );
 
   // Media proxy endpoint for additional CORS support
   app.get("/api/media/:postId/:fileName", async (req, res) => {
