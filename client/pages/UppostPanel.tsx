@@ -21,6 +21,7 @@ export default function UppostPanel() {
   const [city, setCity] = useState("");
   const [server, setServer] = useState("");
   const [nsfw, setNsfw] = useState(false);
+  const [blurThumbnail, setBlurThumbnail] = useState(false);
   const [isTrend, setIsTrend] = useState(false);
   const [trendRank, setTrendRank] = useState("");
   const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -171,6 +172,7 @@ export default function UppostPanel() {
     setCity("");
     setServer("");
     setNsfw(false);
+    setBlurThumbnail(false);
     setIsTrend(false);
     setTrendRank("");
     setThumbnail(null);
@@ -266,6 +268,7 @@ export default function UppostPanel() {
       if (city) formData.append("city", city);
       if (server) formData.append("server", server);
       formData.append("nsfw", nsfw.toString());
+      formData.append("blurThumbnail", blurThumbnail.toString());
       if (isTrend) formData.append("isTrend", isTrend.toString());
       if (isTrend && trendRank) formData.append("trendRank", trendRank);
 
@@ -892,6 +895,42 @@ export default function UppostPanel() {
                     placeholder="e.g., +1-555-0123"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Blur Thumbnail Checkbox */}
+            <div
+              className="relative overflow-hidden animate-slideInLeft"
+              style={{ animationDelay: "0.51s" }}
+            >
+              <div className="relative flex items-start sm:items-center gap-3 bg-blue-600/15 border-2 border-blue-600/40 hover:border-blue-600/60 rounded-lg sm:rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/10">
+                <input
+                  type="checkbox"
+                  id="blur-checkbox"
+                  checked={blurThumbnail}
+                  onChange={(e) => setBlurThumbnail(e.target.checked)}
+                  className="w-4 h-4 sm:w-5 sm:h-5 accent-blue-600 rounded cursor-pointer flex-shrink-0 mt-0.5 sm:mt-0"
+                />
+                <label
+                  htmlFor="blur-checkbox"
+                  className="flex-1 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
+                    <svg
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+                    </svg>
+                    <p className="text-xs sm:text-sm font-bold text-blue-600">
+                      Blur Thumbnail
+                    </p>
+                  </div>
+                  <p className="text-xs text-blue-600/80 ml-5.5 sm:ml-6">
+                    Blur the thumbnail for sensitive or mature content
+                  </p>
+                </label>
               </div>
             </div>
 
