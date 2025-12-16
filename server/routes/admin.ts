@@ -166,6 +166,7 @@ export const handleUpdatePost: RequestHandler = async (req, res) => {
       city,
       server,
       nsfw,
+      blurThumbnail,
       isTrend,
       trendRank,
     } = req.body;
@@ -188,6 +189,7 @@ export const handleUpdatePost: RequestHandler = async (req, res) => {
       city?: string;
       server?: string;
       nsfw?: boolean;
+      blurThumbnail?: boolean;
       isTrend?: boolean;
       trendRank?: number;
     } = {};
@@ -198,6 +200,7 @@ export const handleUpdatePost: RequestHandler = async (req, res) => {
     if (city !== undefined) updates.city = city;
     if (server !== undefined) updates.server = server;
     if (nsfw !== undefined) updates.nsfw = nsfw === "true" || nsfw === true;
+    if (blurThumbnail !== undefined) updates.blurThumbnail = blurThumbnail === "true" || blurThumbnail === true;
     if (isTrend !== undefined)
       updates.isTrend = isTrend === "true" || isTrend === true;
     if (trendRank !== undefined)
@@ -235,6 +238,7 @@ export const handleUpdatePost: RequestHandler = async (req, res) => {
       city: updatedMetadata.city,
       server: updatedMetadata.server,
       thumbnail,
+      blurThumbnail: (updatedMetadata as any).blurThumbnail || false,
       nsfw: updatedMetadata.nsfw || false,
       isTrend: updatedMetadata.isTrend || false,
       trendRank: updatedMetadata.trendRank,
@@ -257,6 +261,121 @@ export const handleUpdatePost: RequestHandler = async (req, res) => {
         process.env.NODE_ENV === "development"
           ? errorMessage
           : "An error occurred while updating the post. Please check server logs.",
+    });
+  }
+};
+
+export const handleAddAttachments: RequestHandler = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    if (!postId) {
+      res.status(400).json({ error: "Post ID is required" });
+      return;
+    }
+
+    if (!req.files || typeof req.files !== "object") {
+      res.status(400).json({ error: "No files provided" });
+      return;
+    }
+
+    const { uploadMediaFile } = await import("../utils/r2-storage");
+
+    const attachments = req.files.attachments;
+    if (!Array.isArray(attachments)) {
+      res.status(400).json({ error: "Invalid attachments format" });
+      return;
+    }
+
+    const metadata = await getPostMetadata(postId);
+    if (!metadata) {
+      res.status(404).json({ error: "Post not found" });
+      return;
+    }
+
+    const uploadedFiles: string[] = [];
+    const errors: Array<{ fileName: string; error: string }> = [];
+
+    for (const file of attachments) {
+      try {
+        const fileName = `${Date.now()}-${uploadedFiles.length}-${file.originalname}`;
+        const mimeType = file.mimetype || "application/octet-stream";
+
+        await uploadMediaFile(postId, fileName, file.buffer, mimeType);
+        uploadedFiles.push(fileName);
+      } catch (fileError) {
+        errors.push({
+          fileName: file.originalname || "unknown",
+          error:
+            fileError instanceof Error
+              ? fileError.message
+              : "Unknown error",
+        });
+      }
+    }
+
+    if (uploadedFiles.length === 0 && errors.length > 0) {
+      res.status(500).json({
+        error: "Failed to upload attachments",
+        details: errors,
+      });
+      return;
+    }
+
+    // Get updated file list
+    const mediaFiles = await listPostFiles(postId);
+    const mediaFileObjects = mediaFiles
+      .map((fileName) => ({
+        name: fileName,
+        url: `/api/media/${postId}/${fileName}`,
+        type: getMimeType(fileName),
+      }))
+      .filter((f) => f.name !== "metadata.json");
+
+    let thumbnail: string | undefined;
+    if ((metadata as any).thumbnail) {
+      thumbnail = (metadata as any).thumbnail;
+    } else if (mediaFileObjects.length > 0) {
+      thumbnail = mediaFileObjects[0].url;
+    }
+
+    const post: Post = {
+      id: metadata.id,
+      title: metadata.title,
+      description: metadata.description,
+      country: metadata.country,
+      city: metadata.city,
+      server: metadata.server,
+      thumbnail,
+      blurThumbnail: (metadata as any).blurThumbnail || false,
+      nsfw: metadata.nsfw || false,
+      isTrend: metadata.isTrend || false,
+      trendRank: metadata.trendRank,
+      mediaFiles: mediaFileObjects,
+      createdAt: metadata.createdAt,
+    };
+
+    const response: any = {
+      success: true,
+      message: `${uploadedFiles.length} file(s) uploaded successfully`,
+      post,
+    };
+
+    if (errors.length > 0) {
+      response.errors = errors;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error adding attachments:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to add attachments",
+      details:
+        process.env.NODE_ENV === "development"
+          ? errorMessage
+          : "An error occurred while adding attachments. Please check server logs.",
     });
   }
 };
