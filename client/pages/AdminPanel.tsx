@@ -513,7 +513,7 @@ export default function AdminPanel() {
                             className={cn(
                               "w-10 h-10 sm:w-11 sm:h-11 rounded-lg font-bold transition-all text-xs sm:text-sm shadow-sm hover:shadow-md flex items-center justify-center",
                               currentPage === pageNum
-                                ? "bg-[#0088CC] text-white shadow-lg shadow-[#0088CC]/30 min-w-10 sm:min-w-11"
+                                ? "bg-[#0088CC] text-white shadow-lg shadow-[#0088CC]/30"
                                 : "bg-card border-2 border-border hover:border-[#0088CC]/40 text-foreground hover:shadow-lg hover:shadow-[#0088CC]/10 min-w-10 sm:min-w-11",
                             )}
                           >
