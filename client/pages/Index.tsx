@@ -201,7 +201,7 @@ export default function Index() {
                           alt={post.title}
                           className={cn(
                             "w-full h-full object-cover group-hover:scale-110 transition-transform duration-300",
-                            post.blurThumbnail && "blur-2xl"
+                            post.blurThumbnail && "blur-2xl",
                           )}
                           onError={(e) => {
                             const img = e.target as HTMLImageElement;

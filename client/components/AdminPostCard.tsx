@@ -42,7 +42,7 @@ export default function AdminPostCard({
               alt={post.title}
               className={cn(
                 "w-full h-full object-cover",
-                post.blurThumbnail && "blur-2xl"
+                post.blurThumbnail && "blur-2xl",
               )}
               onError={(e) => {
                 const img = e.target as HTMLImageElement;

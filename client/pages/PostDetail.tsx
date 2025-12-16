@@ -174,7 +174,7 @@ export default function PostDetail() {
                     alt={post.title}
                     className={cn(
                       "w-full h-auto object-cover",
-                      post.blurThumbnail && "blur-2xl"
+                      post.blurThumbnail && "blur-2xl",
                     )}
                     onError={() => setThumbnailError(true)}
                     crossOrigin="anonymous"
