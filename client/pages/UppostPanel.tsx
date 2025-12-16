@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { LogOut, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -7,6 +7,7 @@ import { UploadIcon, ImageIcon } from "@/components/Icons";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { validateUploadInputs } from "@/lib/r2-upload";
+import { Post, PostsResponse } from "@shared/api";
 
 export default function UppostPanel() {
   const navigate = useNavigate();
@@ -17,6 +18,10 @@ export default function UppostPanel() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [suggestedTitles, setSuggestedTitles] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [server, setServer] = useState("");
