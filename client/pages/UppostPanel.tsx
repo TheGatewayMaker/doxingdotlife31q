@@ -621,7 +621,7 @@ export default function UppostPanel() {
                   autoComplete="off"
                 />
                 {showSuggestions && suggestedTitles.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border-2 border-border/60 rounded-lg sm:rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto">
+                  <div className="absolute bottom-full left-0 right-0 mb-1 bg-card border-2 border-border/60 rounded-lg sm:rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto opacity-100 backdrop-blur-sm">
                     {suggestedTitles.map((suggestion, idx) => (
                       <button
                         key={idx}
