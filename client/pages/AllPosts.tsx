@@ -287,7 +287,7 @@ export default function AllPosts() {
                           key={page}
                           onClick={() => setCurrentPage(page)}
                           className={cn(
-                            "w-8 h-8 sm:w-9 md:w-10 rounded font-semibold transition-all text-xs shadow-sm hover:shadow-md touch-target",
+                            "w-8 h-8 sm:w-9 md:w-10 rounded font-semibold transition-all text-xs shadow-sm hover:shadow-md touch-target flex items-center justify-center",
                             currentPage === page
                               ? "bg-[#0088CC] text-white"
                               : "bg-[#1a1a1a] border border-[#666666] hover:border-[#0088CC] hover:bg-[#0088CC]/10 text-[#979797]",

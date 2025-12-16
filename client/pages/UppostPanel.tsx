@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { LogOut, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -7,6 +7,7 @@ import { UploadIcon, ImageIcon } from "@/components/Icons";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { validateUploadInputs } from "@/lib/r2-upload";
+import { Post, PostsResponse } from "@shared/api";
 
 export default function UppostPanel() {
   const navigate = useNavigate();
@@ -17,6 +18,10 @@ export default function UppostPanel() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [suggestedTitles, setSuggestedTitles] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [server, setServer] = useState("");
@@ -48,6 +53,66 @@ export default function UppostPanel() {
   const [ipAddress, setIpAddress] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const response = await fetch("/api/posts");
+        const data: PostsResponse = await response.json();
+        setAllPosts(Array.isArray(data.posts) ? data.posts : []);
+      } catch (error) {
+        console.error("Error loading posts for title suggestions:", error);
+      }
+    };
+
+    loadPosts();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        titleInputRef.current &&
+        !titleInputRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    if (showSuggestions) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [showSuggestions]);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTitle(value);
+
+    if (value.trim().length > 0) {
+      const searchTerm = value.toLowerCase().trim();
+      const matches = allPosts
+        .filter((post) => post.title.toLowerCase().includes(searchTerm))
+        .map((post) => post.title)
+        .slice(0, 5);
+
+      setSuggestedTitles(matches);
+      setShowSuggestions(matches.length > 0);
+    } else {
+      setSuggestedTitles([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectSuggestion = (selectedTitle: string) => {
+    setTitle(selectedTitle);
+    setShowSuggestions(false);
+    setSuggestedTitles([]);
+    toast.info(
+      `Similar post title found: "${selectedTitle}". Make sure this isn't a duplicate!`,
+    );
+  };
 
   const handleLogin = async () => {
     setLoginError("");
@@ -542,12 +607,40 @@ export default function UppostPanel() {
               </label>
               <div className="relative">
                 <input
+                  ref={titleInputRef}
                   type="text"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={handleTitleChange}
+                  onFocus={() => {
+                    if (suggestedTitles.length > 0) {
+                      setShowSuggestions(true);
+                    }
+                  }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                   placeholder="Enter post title"
+                  autoComplete="off"
                 />
+                {showSuggestions && suggestedTitles.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border-2 border-border/60 rounded-lg sm:rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto">
+                    {suggestedTitles.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelectSuggestion(suggestion)}
+                        className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-accent/20 transition-colors text-sm text-foreground border-b border-border/40 last:border-b-0 active:scale-95"
+                      >
+                        <div className="flex items-start gap-2">
+                          <span className="text-accent/60 flex-shrink-0 mt-0.5">
+                            ✓
+                          </span>
+                          <span className="line-clamp-2 flex-1">
+                            {suggestion}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
