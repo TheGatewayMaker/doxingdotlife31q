@@ -70,7 +70,10 @@ export default function UppostPanel() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (titleInputRef.current && !titleInputRef.current.contains(e.target as Node)) {
+      if (
+        titleInputRef.current &&
+        !titleInputRef.current.contains(e.target as Node)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -90,9 +93,7 @@ export default function UppostPanel() {
     if (value.trim().length > 0) {
       const searchTerm = value.toLowerCase().trim();
       const matches = allPosts
-        .filter((post) =>
-          post.title.toLowerCase().includes(searchTerm)
-        )
+        .filter((post) => post.title.toLowerCase().includes(searchTerm))
         .map((post) => post.title)
         .slice(0, 5);
 
@@ -108,7 +109,9 @@ export default function UppostPanel() {
     setTitle(selectedTitle);
     setShowSuggestions(false);
     setSuggestedTitles([]);
-    toast.info(`Similar post title found: "${selectedTitle}". Make sure this isn't a duplicate!`);
+    toast.info(
+      `Similar post title found: "${selectedTitle}". Make sure this isn't a duplicate!`,
+    );
   };
 
   const handleLogin = async () => {
@@ -627,8 +630,12 @@ export default function UppostPanel() {
                         className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-accent/20 transition-colors text-sm text-foreground border-b border-border/40 last:border-b-0 active:scale-95"
                       >
                         <div className="flex items-start gap-2">
-                          <span className="text-accent/60 flex-shrink-0 mt-0.5">✓</span>
-                          <span className="line-clamp-2 flex-1">{suggestion}</span>
+                          <span className="text-accent/60 flex-shrink-0 mt-0.5">
+                            ✓
+                          </span>
+                          <span className="line-clamp-2 flex-1">
+                            {suggestion}
+                          </span>
                         </div>
                       </button>
                     ))}
