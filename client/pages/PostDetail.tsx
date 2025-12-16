@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Share2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PostDescriptionSection from "@/components/PostDescriptionSection";
@@ -171,7 +172,10 @@ export default function PostDetail() {
                   <img
                     src={post.thumbnail}
                     alt={post.title}
-                    className="w-full h-auto object-cover"
+                    className={cn(
+                      "w-full h-auto object-cover",
+                      post.blurThumbnail && "blur-2xl",
+                    )}
                     onError={() => setThumbnailError(true)}
                     crossOrigin="anonymous"
                   />
