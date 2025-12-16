@@ -54,6 +54,48 @@ export default function UppostPanel() {
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const response = await fetch("/api/posts");
+        const data: PostsResponse = await response.json();
+        setAllPosts(Array.isArray(data.posts) ? data.posts : []);
+      } catch (error) {
+        console.error("Error loading posts for title suggestions:", error);
+      }
+    };
+
+    loadPosts();
+  }, []);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTitle(value);
+
+    if (value.trim().length > 0) {
+      const searchTerm = value.toLowerCase().trim();
+      const matches = allPosts
+        .filter((post) =>
+          post.title.toLowerCase().includes(searchTerm)
+        )
+        .map((post) => post.title)
+        .slice(0, 5);
+
+      setSuggestedTitles(matches);
+      setShowSuggestions(matches.length > 0);
+    } else {
+      setSuggestedTitles([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectSuggestion = (selectedTitle: string) => {
+    setTitle(selectedTitle);
+    setShowSuggestions(false);
+    setSuggestedTitles([]);
+    toast.info(`Similar post title found: "${selectedTitle}". Make sure this isn't a duplicate!`);
+  };
+
   const handleLogin = async () => {
     setLoginError("");
     setIsLoggingIn(true);
