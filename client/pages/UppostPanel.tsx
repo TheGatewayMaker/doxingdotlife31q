@@ -589,12 +589,36 @@ export default function UppostPanel() {
               </label>
               <div className="relative">
                 <input
+                  ref={titleInputRef}
                   type="text"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={handleTitleChange}
+                  onFocus={() => {
+                    if (suggestedTitles.length > 0) {
+                      setShowSuggestions(true);
+                    }
+                  }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-background/50 border-2 border-border/60 hover:border-accent/60 rounded-lg sm:rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 text-sm"
                   placeholder="Enter post title"
+                  autoComplete="off"
                 />
+                {showSuggestions && suggestedTitles.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border-2 border-border/60 rounded-lg sm:rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto">
+                    {suggestedTitles.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelectSuggestion(suggestion)}
+                        className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-accent/20 transition-colors text-sm text-foreground border-b border-border/40 last:border-b-0 active:scale-95"
+                      >
+                        <div className="flex items-start gap-2">
+                          <span className="text-accent/60 flex-shrink-0 mt-0.5">✓</span>
+                          <span className="line-clamp-2 flex-1">{suggestion}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
